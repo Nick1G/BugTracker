@@ -1,0 +1,8 @@
+﻿@model SelectList
+<h1>@ViewData["Title"]</h1>
+<form method="post" asp-action="AddUserToRole">
+    <select name="userId" asp-items="@ViewBag.Users"></select>
+    <select name="role" asp-items="@ViewBag.Roles"></select>
+    <button type="submit">Add User To Role</button>
+    <p>@ViewBag.Message</p>
+</form>
