@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int TicketId { get; set; }
-        public Tickets Ticket { get; set; }
+        public Tickets Ticket { get; set; } = null!;
         public string FilePath { get; set; }
         public string Description { get; set; }
         public DateTime Created { get; set; }
