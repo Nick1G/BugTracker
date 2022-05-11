@@ -17,8 +17,8 @@
         public TicketStatuses TicketStatus { get; set; }
         public string OwnerUserId { get; set; }
         public ApplicationUser OwnerUser { get; set; }
-        public string? AssignedToUserId { get; set; }
-        public ApplicationUser? AssignedToUser { get; set; }
+        public string? AssignedToUserId { get; set; } = null;
+        public ApplicationUser? AssignedToUser { get; set; } = null;
 
         public ICollection<TicketAttachments> TicketAttachments { get; set; }
         public ICollection<TicketComments> TicketComments { get; set; }
@@ -33,7 +33,7 @@
             TicketNotifications = new HashSet<TicketNotifications>();
         }
 
-        public Tickets(string title, string desc, int projectId, int typeId, int statusId, string ownerUserId, string assignedUserId)
+        public Tickets(string title, string desc, int projectId, int typeId, int statusId, int priorityId, string ownerUserId)
         {
             Created = DateTime.Now;
             Title = title;
@@ -41,8 +41,8 @@
             ProjectId = projectId;
             TicketTypeId = typeId;
             TicketStatusId = statusId;
+            TicketPriorityId = priorityId;
             OwnerUserId = ownerUserId;
-            AssignedToUserId = assignedUserId;
 
             TicketAttachments = new HashSet<TicketAttachments>();
             TicketComments = new HashSet<TicketComments>();
