@@ -17,9 +17,9 @@
 
         }
 
-        public TicketHistories(DateTime changedDate, string oldValue, string newValue, int ticketId, string userId, Property property)
+        public TicketHistories(string oldValue, string newValue, int ticketId, string userId, Property property)
         {
-            Changed = changedDate;
+            Changed = DateTime.Now;
             OldValue = oldValue;
             NewValue = newValue;
             TicketId = ticketId;
@@ -30,6 +30,11 @@
 
     public enum Property
     {
-        Basic,
+        Title,
+        Description,
+        Type,
+        Status,
+        Priority,
+        AssignedToUser
     }
 }
