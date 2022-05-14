@@ -16,3 +16,45 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.display-4 {
+    animation: fadeInAnimation ease 2s;
+}
+
+.pages {
+    text-align: left;
+}
+
+.page1 {
+    opacity: 0;
+    animation: fadeInAcross ease 2s;
+    animation-delay: 2s;
+    animation-fill-mode: forwards;
+}
+
+.page2 {
+    opacity: 0;
+    animation: fadeInAcross ease 2s;
+    animation-delay: 2.5s;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeInAnimation {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeInAcross {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
