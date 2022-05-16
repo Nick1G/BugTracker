@@ -8,9 +8,8 @@
         public ICollection<ProjectUsers> ProjectUsers { get; set; }
         public ICollection<Tickets> Tickets { get; set; }
 
-        public Projects(string name)
+        public Projects()
         {
-            Name = name;
             ProjectUsers = new HashSet<ProjectUsers>();
             Tickets = new HashSet<Tickets>();
         }

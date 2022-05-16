@@ -1,0 +1,15 @@
+﻿@model BugTracker.Models.Projects
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Delete</h1>
+
+<h3>@Model.Name will be deleted permanently</h3>
+<div>
+    <form asp-action="Delete">
+        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <a asp-action="Index">Back to List</a>
+    </form>
+</div>
