@@ -22,7 +22,17 @@ body {
 }
 
 .pages {
-    text-align: left;
+    margin-top: 3rem;
+    text-align: center;
+}
+
+.pages a {
+    text-decoration: none;
+    color: black;
+}
+
+.pages a:hover {
+    color: blue;
 }
 
 .page1 {
