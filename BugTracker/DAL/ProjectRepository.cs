@@ -5,7 +5,7 @@ namespace BugTracker.DAL
 {
     public class ProjectRepository : IRepository<Projects>
     {
-        public ApplicationDbContext Context { get; set; }
+        private readonly ApplicationDbContext Context;
 
         public ProjectRepository(ApplicationDbContext context)
         {
