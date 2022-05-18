@@ -45,7 +45,7 @@ body {
 .page2 {
     opacity: 0;
     animation: fadeInAcross ease 2s;
-    animation-delay: 2.5s;
+    animation-delay: 2.1s;
     animation-fill-mode: forwards;
 }
 

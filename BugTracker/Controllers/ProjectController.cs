@@ -3,23 +3,40 @@ using BugTracker.DAL;
 using BugTracker.Data;
 using BugTracker.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.Controllers
 {
     public class ProjectController : Controller
     {
         private ProjectBusinessLogic ProjectBL { get; set; }
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public ProjectController(ApplicationDbContext context)
+        public ProjectController(ApplicationDbContext context, UserManager<ApplicationUser> um)
         {
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
+            _userManager = um;
         }
 
-        [Authorize(Roles = "Admin, Project Manager")]
-        public IActionResult Index()
+        [Authorize(Roles = "Admin, Project Manager, Developer, Submitter")]
+        public async Task<IActionResult> Index(bool? allView)
         {
-            return View(ProjectBL.AllProjects());
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            IList<string> roles = await _userManager.GetRolesAsync(user);
+
+            if (roles.Contains("Admin") || roles.Contains("Project Manager"))
+                ViewBag.Manager = user;
+            else
+                ViewBag.Manager = null;
+
+            if (allView == false || allView == null)
+                return View(ProjectBL.GetAssignedProjects(user));
+            else
+                return View(ProjectBL.AllProjects());
+
+            return NotFound();
         }
 
         [Authorize(Roles = "Admin, Project Manager")]
@@ -38,6 +55,7 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin, Project Manager")]
         public IActionResult Edit(int? id)
         {
             if(id == null)
@@ -65,6 +83,7 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+        [Authorize(Roles = "Admin, Project Manager")]
         public IActionResult Delete(int? id)
         {
             if (id == null)

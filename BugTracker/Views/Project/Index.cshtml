@@ -8,6 +8,13 @@
 
 <p>
     <a asp-action="CreateProject">Create New</a>
+    @if (ViewBag.Manager != null)
+    {
+        <br/>
+        <a asp-action="Index" asp-route-allView="@true">List All Projects</a>
+        <br/>
+        <a asp-action="Index" asp-route-allView="@false">List Assigned Projects</a>
+    }
 </p>
 <table class="table">
     <thead>
