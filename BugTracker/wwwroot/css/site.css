@@ -73,10 +73,25 @@ body {
     margin-bottom: 2rem;
 }
 
+.table tbody {
+    border-bottom: black 1px solid;
+    border-left: black 1px solid;
+    border-right: black 1px solid;
+}
+
 .table tbody tr:nth-child(even) {
     background-color: rgb(205, 209, 228);
 }
 
 .table thead tr {
     background-color: white;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.btn-danger {
+    margin-bottom: 1rem;
+    margin-top: 1rem;
 }
