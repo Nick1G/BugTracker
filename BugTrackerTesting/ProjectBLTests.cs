@@ -15,7 +15,7 @@ namespace BugTrackerTesting
 
             allProjects = new List<Projects>() { mockProject1, mockProject2, mockProject3, };
 
-            Mock<ProjectRepository> mockRepo = new Mock<ProjectRepository>();
+            Mock<IRepository<Projects>> mockRepo = new Mock<IRepository<Projects>>();
 
             mockRepo.Setup(repo => repo.Get(It.Is<int>(id => id == 1))).Returns(mockProject1);
             mockRepo.Setup(repo => repo.Get(It.Is<int>(id => id == 2))).Returns(mockProject2);
@@ -28,7 +28,10 @@ namespace BugTrackerTesting
         [TestMethod]
         public void GetAllProjectsTest()
         {
-            
+            var expectedList = allProjects;
+            var actualList = projectBL.AllProjects();
+
+            CollectionAssert.AreEqual(expectedList, actualList);
         }
     }
 }
