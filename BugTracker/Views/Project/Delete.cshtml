@@ -6,10 +6,11 @@
 
 <h1>Delete</h1>
 
-<h3>@Model.Name will be deleted permanently</h3>
+<h3>@Model.Name will be deleted permanently. Are you sure?</h3>
 <div>
     <form asp-action="Delete">
-        <input type="submit" value="Delete" class="btn btn-danger" /> |
+        <input type="submit" value="Delete" class="btn btn-danger" />
+        <br/>
         <a asp-action="Index">Back to List</a>
     </form>
 </div>

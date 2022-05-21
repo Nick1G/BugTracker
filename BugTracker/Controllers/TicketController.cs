@@ -12,7 +12,7 @@ namespace BugTracker.Controllers
         public TicketController(ApplicationDbContext context)
         {
             TicketBL = new TicketBusinessLogic(new TicketRepository(context));
-        } 
+        }
 
         public IActionResult Index()
         {
