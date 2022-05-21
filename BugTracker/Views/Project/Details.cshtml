@@ -1,0 +1,30 @@
+﻿@model BugTracker.Models.Projects
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Projects</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.Name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.Name)
+        </dd>
+    </dl>
+    @foreach(var i in Model.Tickets)
+    {
+        <a asp-controller="Ticket" asp-action="Details" asp-route-id="@i.Id">@i.Title</a>
+    }
+</div>
+<div>
+    <a asp-action="AssignUsers">Assign Users</a>
+    <a asp-controller="Ticket" asp-action="Create" asp-route-id="@Model?.Id">Create new ticket</a>
+    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

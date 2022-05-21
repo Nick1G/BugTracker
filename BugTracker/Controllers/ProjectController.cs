@@ -5,6 +5,7 @@ using BugTracker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.Controllers
@@ -13,9 +14,11 @@ namespace BugTracker.Controllers
     {
         private ProjectBusinessLogic ProjectBL { get; set; }
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly ApplicationDbContext db;
 
         public ProjectController(ApplicationDbContext context, UserManager<ApplicationUser> um)
         {
+            db = context;
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
             _userManager = um;
         }
@@ -105,6 +108,26 @@ namespace BugTracker.Controllers
                 ProjectBL.DeleteProject(project);
             }
             return RedirectToAction(nameof(Index));
+        }
+
+        public IActionResult Details(int? id)
+        {
+            Projects project = ProjectBL.GetProject((int)id);
+            if(project != null)
+            {
+                return View(project);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
+        [Authorize(Roles = "Admin, Project Manager")]
+        public IActionResult AssignUsers()
+        {
+            SelectList users = new SelectList(db.Users, "Id", "Email");
+            return View(users);
         }
     }
 }

@@ -117,7 +117,7 @@ namespace BugTracker.Controllers
             }
         }
 
-        
+        [Authorize(Roles = "Admin")]
         public IActionResult Index()
         {
             return View();
