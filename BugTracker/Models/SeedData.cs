@@ -91,6 +91,29 @@ namespace BugTracker.Models
             await userManager.CreateAsync(user6);
             await userManager.AddToRoleAsync(user6, "Project Manager");
 
+            TicketTypes type1 = new ("Incident");
+            context.TicketTypes.Add(type1);
+            TicketTypes type2 = new ("Service Request");
+            context.TicketTypes.Add(type2);
+            TicketTypes type3 = new ("Inforation Request");
+            context.TicketTypes.Add(type3);
+
+            TicketStatuses status1 = new ("Unassigned");
+            context.TicketStatuses.Add(status1);
+            TicketStatuses status2 = new ("Assigned");
+            context.TicketStatuses.Add(status2);
+            TicketStatuses status3 = new ("In Progress");
+            context.TicketStatuses.Add(status3);
+            TicketStatuses status4 = new ("Completed");
+            context.TicketStatuses.Add(status4);
+
+            TicketPriorities priorities1 = new ("High");
+            context.TicketPriorities.Add(priorities1);
+            TicketPriorities priorities2 = new("Medium");
+            context.TicketPriorities.Add(priorities2);
+            TicketPriorities priorities3 = new("Low");
+            context.TicketPriorities.Add(priorities3);
+
             context.SaveChanges();
         }
     }
