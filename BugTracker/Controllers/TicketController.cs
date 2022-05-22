@@ -2,6 +2,7 @@
 using BugTracker.BLL;
 using BugTracker.DAL;
 using BugTracker.Data;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BugTracker.Controllers
 {
@@ -16,6 +17,13 @@ namespace BugTracker.Controllers
 
         public IActionResult Index()
         {
+            return View(TicketBL.AllTickets());
+        }
+
+        [Authorize(Roles = "Submitter")]
+        public IActionResult Create(int? id)
+        {
+            ViewBag.Id = id;
             return View();
         }
     }
