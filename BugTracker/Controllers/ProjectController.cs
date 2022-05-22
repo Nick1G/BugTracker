@@ -39,7 +39,6 @@ namespace BugTracker.Controllers
             else
                 return View(ProjectBL.AllProjects());
 
-            return NotFound();
         }
 
         [Authorize(Roles = "Admin, Project Manager")]
@@ -51,8 +50,12 @@ namespace BugTracker.Controllers
         [HttpPost]
         public IActionResult CreateProject([Bind("Id, Name")] Projects project)
         {
+            string username = User.Identity.Name;
+            ApplicationUser user = db.Users.First(u => u.Email == username);
             if (ModelState.IsValid)
             {
+                user.Projects.Add(project);
+                project.Users.Add(user);
                 ProjectBL.CreateProject(project);
             }
             return RedirectToAction(nameof(Index));
@@ -124,10 +127,31 @@ namespace BugTracker.Controllers
         }
 
         [Authorize(Roles = "Admin, Project Manager")]
-        public IActionResult AssignUsers()
+        public IActionResult AssignUsers(int? Id)
         {
-            SelectList users = new SelectList(db.Users, "Id", "Email");
-            return View(users);
+            ViewBag.projectId = Id;
+            ViewBag.Users = new SelectList(db.Users, "Id", "Email");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult AssignUsers(int? projectId, string? userId)
+        {
+
+            ViewBag.Users = new SelectList(db.Users, "Id", "Email");
+            Projects project = ProjectBL.GetProject((int)projectId);
+            ApplicationUser user = db.Users.Find(userId);
+
+            if(project != null && user != null)
+            {
+                project.Users.Add(user);
+                user.Projects.Add(project);
+                string message = "User " + user.Email + " successfully assigned to " + project.Name;
+                db.SaveChanges();
+                ViewBag.message = message;
+            }
+            return View("AssignUsers");
         }
     }
 }

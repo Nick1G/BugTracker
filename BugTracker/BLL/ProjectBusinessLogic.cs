@@ -25,7 +25,7 @@ namespace BugTracker.BLL
 
         public List<Projects> GetAssignedProjects(ApplicationUser user)
         {
-            return GetProjectsList(p => p.ProjectUsers.Any(s => s.UserId == user.Id));
+            return GetProjectsList(p => p.Users.Any(s => s.Id == user.Id));
         }
 
         public Projects GetProject(int id)

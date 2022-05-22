@@ -50,7 +50,7 @@ namespace BugTracker.DAL
 
         public ICollection<Projects> GetList(Func<Projects, bool> whereFunction)
         {
-            return Context.Projects.Include(p => p.ProjectUsers).Where(whereFunction).ToList();
+            return Context.Projects.Include(p => p.Users).Where(whereFunction).ToList();
         }
     }
 }
