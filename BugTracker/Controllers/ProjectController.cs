@@ -138,7 +138,7 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AssignUsers(int? projectId, string? userId)
         {
-
+            ViewBag.projectId = projectId;
             ViewBag.Users = new SelectList(db.Users, "Id", "Email");
             Projects project = ProjectBL.GetProject((int)projectId);
             ApplicationUser user = db.Users.Find(userId);
@@ -148,6 +148,35 @@ namespace BugTracker.Controllers
                 project.Users.Add(user);
                 user.Projects.Add(project);
                 string message = "User " + user.Email + " successfully assigned to " + project.Name;
+                db.SaveChanges();
+                ViewBag.message = message;
+            }
+            return View("AssignUsers");
+        }
+
+        [Authorize(Roles = "Admin, Project Manager")]
+        public IActionResult RemoveUsers(int? Id)
+        {
+            ViewBag.projectId = Id;
+            Projects project = ProjectBL.GetProject((int)Id);
+            ViewBag.Users = new SelectList(project.Users, "Id", "Email");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult RemoveUsers(int? projectId, string? userId)
+        {
+            ViewBag.projectId = projectId;
+            Projects project = ProjectBL.GetProject((int)projectId);
+            ViewBag.Users = new SelectList(project.Users, "Id", "Email");
+            ApplicationUser user = db.Users.Find(userId);
+
+            if (project != null && user != null)
+            {
+                project.Users.Remove(user);
+                user.Projects.Remove(project);
+                string message = "User " + user.Email + " successfully removed from " + project.Name;
                 db.SaveChanges();
                 ViewBag.message = message;
             }
