@@ -1,0 +1,7 @@
+﻿<h1>@ViewData["Title"]</h1>
+<form asp-action="AssignUsers" asp-route-projectId="@ViewBag.projectId">
+    <select name="userId" asp-items="@ViewBag.Users"></select>
+    <button type="submit">Assign User</button>
+</form>
+<p>@ViewBag.message</p>
+<div><a asp-action="Details" asp-route-id="@ViewBag.projectId">Back to Project</a></div>

@@ -20,16 +20,15 @@ namespace BugTracker.Data
         }
 
         public DbSet<Projects> Projects { get; set; }
-        public DbSet<ProjectUsers> ProjectUsers;
-        public DbSet<TicketAttachments> TicketAttachments;
-        public DbSet<TicketComments> TicketComments;
-        public DbSet<TicketHistories> TicketHistories;
-        public DbSet<TicketNotifications> TicketNotifications;
-        public DbSet<TicketPriorities> TicketPriorities;
-        public DbSet<Tickets> Tickets;
-        public DbSet<TicketStatuses> TicketStatuses;
-        public DbSet<TicketTypes> TicketTypes;
+        public DbSet<ProjectUsers> ProjectUsers { get; set; }
+        public DbSet<TicketAttachments> TicketAttachments { get; set; }
+        public DbSet<TicketComments> TicketComments { get; set; }
+        public DbSet<TicketHistories> TicketHistories { get; set; }
+        public DbSet<TicketNotifications> TicketNotifications { get; set; }
+        public DbSet<TicketPriorities> TicketPriorities { get; set; }
+        public DbSet<Tickets> Tickets { get; set; }
+        public DbSet<TicketStatuses> TicketStatuses { get; set; }
+        public DbSet<TicketTypes> TicketTypes { get; set; }
         public DbSet<ApplicationUser> Users { get; set; }
-        public DbSet<BugTracker.Models.Projects>? Projects_1 { get; set; }
     }
 }
