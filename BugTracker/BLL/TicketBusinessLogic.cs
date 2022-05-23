@@ -32,13 +32,13 @@ namespace BugTracker.BLL
             return repo.Get(id);
         }
 
-        public void CreateProject(Tickets ticket)
+        public void CreateTicket(Tickets ticket)
         {
             repo.Add(ticket);
             repo.Save();
         }
 
-        public void UpdateProject(Tickets ticket)
+        public void UpdateTicket(Tickets ticket)
         {
             repo.Update(ticket);
             repo.Save();

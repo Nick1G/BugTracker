@@ -1,4 +1,6 @@
-﻿namespace BugTracker.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BugTracker.Models
 {
     public class Tickets
     {
@@ -7,18 +9,24 @@
         public string Description { get; set; }
         public DateTime Created { get; set; }
         public DateTime? Updated { get; set; } = null;
-        public int ProjectId { get; set; }
-        public Projects Project { get; set; }
-        public int TicketTypeId { get; set; }
-        public TicketTypes TicketType { get; set; }
-        public int TicketPriorityId { get; set; }
-        public TicketPriorities TicketPriority { get; set; }
-        public int TicketStatusId { get; set; }
-        public TicketStatuses TicketStatus { get; set; }
-        public string OwnerUserId { get; set; }
-        public ApplicationUser OwnerUser { get; set; }
-        public string? AssignedToUserId { get; set; } = null;
-        public ApplicationUser? AssignedToUser { get; set; } = null;
+        public int? ProjectId { get; set; }
+        [ForeignKey("ProjectId")]
+        public  Projects? Project { get; set; }
+        public int? TicketTypeId { get; set; }
+        [ForeignKey("TicketTypeId")]
+        public TicketTypes? TicketType { get; set; }
+        public int? TicketPriorityId { get; set; }
+        [ForeignKey("TicketPriorityId")]
+        public TicketPriorities? TicketPriority { get; set; }
+        public int? TicketStatusId { get; set; }
+        [ForeignKey("TicketStatusId")]
+        public TicketStatuses? TicketStatus { get; set; }
+        public string? OwnerUserId { get; set; }
+        [ForeignKey("OwnerUserId")]
+        public ApplicationUser? OwnerUser { get; set; }
+        public string? AssignedToUserId { get; set; }
+        [ForeignKey("AssignedToUserId")]
+        public ApplicationUser? AssignedToUser { get; set; }
 
         public ICollection<TicketAttachments> TicketAttachments { get; set; }
         public ICollection<TicketComments> TicketComments { get; set; }

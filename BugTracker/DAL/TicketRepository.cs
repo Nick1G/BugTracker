@@ -35,7 +35,7 @@ namespace BugTracker.DAL
 
         public Tickets Get(int id)
         {
-            return Context.Tickets.First(t => t.Id == id);
+            return Context.Tickets.Include("Project").First(t => t.Id == id);
         }
 
         public Tickets Get(Func<Tickets, bool> firstFunction)
@@ -45,7 +45,7 @@ namespace BugTracker.DAL
 
         public ICollection<Tickets> GetAll()
         {
-            return Context.Tickets.ToList();
+            return Context.Tickets.Include("Project").ToList();
         }
 
         public ICollection<Tickets> GetList(Func<Tickets, bool> whereFunction)
