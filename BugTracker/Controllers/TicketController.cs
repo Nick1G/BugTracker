@@ -51,6 +51,17 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        
+        public IActionResult Details(int? id)
+        {
+            Tickets ticket = TicketBL.GetTicket((int)id);
+            if (ticket != null)
+            {
+                return View(ticket);
+            }
+            else
+            {
+                return RedirectToAction(nameof(Index));
+            }
+        }
     }
 }

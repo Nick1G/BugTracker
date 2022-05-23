@@ -35,7 +35,12 @@ namespace BugTracker.DAL
 
         public Tickets Get(int id)
         {
-            return Context.Tickets.Include("Project").First(t => t.Id == id);
+            return Context.Tickets.Include("Project")
+                                  .Include("TicketType")
+                                  .Include("TicketStatus")
+                                  .Include("TicketPriority")
+                                  .Include("OwnerUser")
+                                  .Include("AssignedToUser").First(t => t.Id == id);
         }
 
         public Tickets Get(Func<Tickets, bool> firstFunction)
