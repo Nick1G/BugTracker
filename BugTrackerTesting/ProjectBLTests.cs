@@ -5,6 +5,7 @@ namespace BugTrackerTesting
     {
         private ProjectBusinessLogic projectBL;
         private List<Projects> allProjects;
+        private Projects testAdd;
 
         [TestInitialize]
         public void Initialize()
@@ -12,6 +13,9 @@ namespace BugTrackerTesting
             Projects mockProject1 = new Projects() { Id = 1, Name = "Project1", };
             Projects mockProject2 = new Projects() { Id = 2, Name = "Project2", };
             Projects mockProject3 = new Projects() { Id = 3, Name = "Project3", };
+            Projects testAddProject = new Projects() { Id = 4, Name = "Newton" };
+
+            testAdd = testAddProject;
 
             allProjects = new List<Projects>() { mockProject1, mockProject2, mockProject3, };
 
@@ -23,6 +27,7 @@ namespace BugTrackerTesting
             mockRepo.Setup(repo => repo.GetAll()).Returns(allProjects);
 
             mockRepo.Setup(repo => repo.Delete(It.Is<Projects>(project => project == mockProject1))).Callback(() => allProjects.Remove(mockProject1));
+            mockRepo.Setup(repo => repo.Add(It.Is<Projects>(project => project == testAddProject))).Callback(() => allProjects.Add(testAddProject));
 
             projectBL = new ProjectBusinessLogic(mockRepo.Object);
         }
@@ -50,6 +55,13 @@ namespace BugTrackerTesting
             projectBL.DeleteProject(projectToDelete);
 
             CollectionAssert.DoesNotContain(allProjects, projectToDelete);
+        }
+
+        [TestMethod]
+        public void CreateProjectTest()
+        {
+            projectBL.CreateProject(testAdd);
+            CollectionAssert.Contains(allProjects, testAdd);
         }
     }
 }
