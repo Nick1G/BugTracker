@@ -93,5 +93,33 @@ namespace BugTracker.Controllers
             }
             return RedirectToRoute(new { action = "Details", id = ticketId });
         }
+
+        public IActionResult Edit(int? id)
+        {
+            ViewBag.TicketStatus = new SelectList(db.TicketStatuses, "Id", "Name");
+            ViewBag.TicketType = new SelectList(db.TicketTypes, "Id", "Name");
+            ViewBag.TicketPriorities = new SelectList(db.TicketPriorities, "Id", "Name");
+            Tickets ticket = TicketBL.GetTicket((int)id);
+            ViewBag.OwnerUserId = ticket.OwnerUserId;
+            ViewBag.AssignedUserId = ticket.AssignedToUserId;
+            ViewBag.ProjectId = ticket.ProjectId;
+            return View(ticket);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult Edit(int id, [Bind("Id, Title, Description, Updated, OwnerUserId, AssignedToUserId, ProjectId, TicketTypeId, TicketStatusId, TicketPriorityId")] Tickets ticket)
+        {
+            if (id != ticket.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                TicketBL.UpdateTicket(ticket);
+            }
+            return RedirectToRoute(new { action = "Details", id = id });
+        }
     }
 }

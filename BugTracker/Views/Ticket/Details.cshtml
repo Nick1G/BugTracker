@@ -76,5 +76,6 @@
     @if(Model.AssignedToUser == null){
         <a asp-action="AssignDeveloper" asp-route-id="@Model?.Id">Assign Developer</a> }
     | <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index">Back to List</a> |
+    <a asp-action="Details" asp-controller="Project" asp-route-id="@Model?.ProjectId">Back to Project</a>
 </div>
