@@ -23,9 +23,7 @@ namespace BugTrackerTesting
 
             Mock<IRepository<Projects>> mockRepo = new Mock<IRepository<Projects>>();
 
-            mockRepo.Setup(repo => repo.Get(It.Is<int>(id => id == 1))).Returns(mockProject1);
-            mockRepo.Setup(repo => repo.Get(It.Is<int>(id => id == 2))).Returns(mockProject2);
-            mockRepo.Setup(repo => repo.Get(It.Is<int>(id => id == 3))).Returns(mockProject3);
+            mockRepo.Setup(repo => repo.Get(It.IsAny<int>())).Returns<int>((num) => allProjects.First(project => project.Id == num));
 
             mockRepo.Setup(repo => repo.GetAll()).Returns(allProjects);
             mockRepo.Setup(repo => repo.GetList(It.IsAny<Func<Projects, bool>>())).Returns<Func<Projects, bool>>((func) => allProjects.Where(func).ToList());
@@ -95,6 +93,47 @@ namespace BugTrackerTesting
             CollectionAssert.Contains(assignedList, proj1);
             CollectionAssert.Contains(assignedList, proj3);
             CollectionAssert.DoesNotContain(assignedList, proj2);
+        }
+    }
+
+    [TestClass]
+    public class TicketBLTests
+    {
+        private TicketBusinessLogic ticketBL;
+        private List<Tickets> allTickets;
+
+        [TestInitialize]
+        public void Initialize()
+        {
+            Tickets mockTicket1 = new Tickets() { Id = 1, Description = "Bop", Created = DateTime.Today, };
+            Tickets mockTicket2 = new Tickets() { Id = 2, Description = "Jenga", Created = DateTime.Now, };
+            Tickets mockTicket3 = new Tickets() { Id = 3, Description = "Plonk", Created = DateTime.MinValue, };
+
+            allTickets = new List<Tickets>() { mockTicket1, mockTicket2, mockTicket3, };
+
+            Mock<IRepository<Tickets>> mockRepo = new Mock<IRepository<Tickets>>();
+
+            mockRepo.Setup(repo => repo.Get(It.IsAny<int>())).Returns<int>((num) => allTickets.First(ticket => ticket.Id == num));
+
+            mockRepo.Setup(repo => repo.GetAll()).Returns(allTickets);
+
+            ticketBL = new TicketBusinessLogic(mockRepo.Object);
+        }
+
+        [TestMethod]
+        public void GetAllTicketsTest()
+        {
+            var tickets = ticketBL.AllTickets();
+            CollectionAssert.AreEqual(tickets, allTickets);
+        }
+
+        [TestMethod]
+        public void GetTicketTest()
+        {
+            var actualFirstTicket = ticketBL.GetTicket(1);
+            var expectedFirstTicket = allTickets.First();
+
+            Assert.AreSame(expectedFirstTicket, actualFirstTicket);
         }
     }
 }
