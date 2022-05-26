@@ -1,5 +1,6 @@
 ﻿using BugTracker.Data;
 using BugTracker.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.DAL
 {
@@ -34,7 +35,7 @@ namespace BugTracker.DAL
 
         public Projects Get(int id)
         {
-            return Context.Projects.First(p => p.Id == id);
+            return Context.Projects.Include("Users").First(p => p.Id == id);
         }
 
         public Projects Get(Func<Projects, bool> firstFunction)
@@ -49,7 +50,7 @@ namespace BugTracker.DAL
 
         public ICollection<Projects> GetList(Func<Projects, bool> whereFunction)
         {
-            return Context.Projects.Where(whereFunction).ToList();
-        } 
+            return Context.Projects.Include(p => p.Users).Where(whereFunction).ToList();
+        }
     }
 }

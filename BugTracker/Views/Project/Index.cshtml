@@ -4,10 +4,17 @@
     ViewData["Title"] = "Index";
 }
 
-<h1>Index</h1>
+<h1 class="title">Projects</h1>
 
 <p>
-    <a asp-action="CreateProject">Create New</a>
+    @if (ViewBag.Manager != null)
+    {
+        <a asp-action="CreateProject">Create New</a>
+        <br/>
+        <a asp-action="Index" asp-route-allView="@true">List All Projects</a>
+        <br/>
+        <a asp-action="Index" asp-route-allView="@false">List Assigned Projects</a>
+    }
 </p>
 <table class="table">
     <thead>
@@ -15,7 +22,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Name)
             </th>
-            <th></th>
+            <th>
+                Options
+            </th>
         </tr>
     </thead>
     <tbody>

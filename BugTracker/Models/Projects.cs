@@ -5,12 +5,12 @@
         public int Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<ProjectUsers> ProjectUsers { get; set; }
+        public ICollection<ApplicationUser> Users { get; set; }
         public ICollection<Tickets> Tickets { get; set; }
 
         public Projects()
         {
-            ProjectUsers = new HashSet<ProjectUsers>();
+            Users = new HashSet<ApplicationUser>();
             Tickets = new HashSet<Tickets>();
         }
     }
