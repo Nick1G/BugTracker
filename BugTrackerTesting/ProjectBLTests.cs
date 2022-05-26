@@ -111,8 +111,15 @@ namespace BugTrackerTesting
             Tickets mockTicket2 = new Tickets() { Id = 2, Description = "Jenga", Created = DateTime.Now, };
             Tickets mockTicket3 = new Tickets() { Id = 3, Description = "", Created = DateTime.MinValue, };
             ApplicationUser newUser = new ApplicationUser();
+            mockTicket1.AssignedToUserId = newUser.Id;
+            mockTicket2.AssignedToUserId = newUser.Id;
+            mockTicket3.OwnerUserId = newUser.Id;
+            newUser.AssignedToTickets.Add(mockTicket1);
+            newUser.AssignedToTickets.Add(mockTicket2);
+            newUser.OwnedTickets.Add(mockTicket3);
 
             allTickets = new List<Tickets>() { mockTicket1, mockTicket2, mockTicket3, };
+            user = newUser;
 
             Mock<IRepository<Tickets>> mockRepo = new Mock<IRepository<Tickets>>();
 
@@ -161,7 +168,9 @@ namespace BugTrackerTesting
         [TestMethod]
         public void CreateTicketTest()
         {
-
+            Tickets newTicket = new Tickets() { Id = 4, Description = "Bwong", Created = DateTime.Now, };
+            ticketBL.CreateTicket(newTicket);
+            CollectionAssert.Contains(allTickets, newTicket);
         }
     }
 }
