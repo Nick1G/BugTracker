@@ -31,6 +31,7 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Delete(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Remove(proj));
             mockRepo.Setup(repo => repo.Add(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Add(proj));
+            mockRepo.Setup(repo => repo.Update(It.IsAny<Projects>())).CallBase();
 
             projectBL = new ProjectBusinessLogic(mockRepo.Object);
         }
@@ -171,6 +172,32 @@ namespace BugTrackerTesting
             Tickets newTicket = new Tickets() { Id = 4, Description = "Bwong", Created = DateTime.Now, };
             ticketBL.CreateTicket(newTicket);
             CollectionAssert.Contains(allTickets, newTicket);
+        }
+
+        [TestMethod]
+        public void DeleteTicketTest()
+        {
+            var ticketToDelete = allTickets[1];
+            ticketBL.DeleteTicket(ticketToDelete);
+            CollectionAssert.DoesNotContain(allTickets, ticketToDelete);
+        }
+
+        [TestMethod]
+        public void GetAssignedTicketsTest()
+        {
+            List<Tickets> expectedAssignedTickets = new List<Tickets>() { allTickets[0], allTickets[1], };
+            var actualAssignedTickets = ticketBL.GetAssignedTickets(user);
+
+            CollectionAssert.AreEqual(expectedAssignedTickets, actualAssignedTickets);
+        }
+
+        [TestMethod]
+        public void GetOwnedTicketsTest()
+        {
+            List<Tickets> expectedOwnedTickets = new List<Tickets>() { allTickets[2], };
+            var actualOwnedTickets = ticketBL.GetOwnedTickets(user);
+
+            CollectionAssert.AreEqual(expectedOwnedTickets, actualOwnedTickets);
         }
     }
 }
