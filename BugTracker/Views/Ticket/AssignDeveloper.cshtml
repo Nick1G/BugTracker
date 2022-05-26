@@ -1,0 +1,6 @@
+﻿<h1>@ViewData["Title"]</h1>
+<form asp-action="AssignDeveloper" asp-route-ticketId="@ViewBag.Id">
+    <select name="userId" asp-items="@ViewBag.developers"></select>
+    <button type="submit">Assign Developer</button>
+</form>
+<div><a asp-action="Details" asp-route-id="@ViewBag.Id">Back to Ticket</a></div>
