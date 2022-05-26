@@ -14,9 +14,10 @@ namespace BugTrackerTesting
             Projects mockProject2 = new Projects() { Id = 2, Name = "Project", };
             Projects mockProject3 = new Projects() { Id = 3, Name = "Project3", };
             ApplicationUser newUser = new ApplicationUser();
-
-            ProjectUsers projUser1 = new ProjectUsers(mockProject1.Id, newUser.Id);
-            ProjectUsers projUser2 = new ProjectUsers(mockProject3.Id, newUser.Id);
+            mockProject1.Users.Add(newUser);
+            mockProject3.Users.Add(newUser);
+            newUser.Projects.Add(mockProject1);
+            newUser.Projects.Add(mockProject3);
 
             allProjects = new List<Projects>() { mockProject1, mockProject2, mockProject3, };
             user = newUser;
@@ -28,8 +29,8 @@ namespace BugTrackerTesting
             mockRepo.Setup(repo => repo.GetAll()).Returns(allProjects);
             mockRepo.Setup(repo => repo.GetList(It.IsAny<Func<Projects, bool>>())).Returns<Func<Projects, bool>>((func) => allProjects.Where(func).ToList());
 
-            mockRepo.Setup(repo => repo.Delete(It.Is<Projects>(project => project == mockProject1))).Callback(() => allProjects.Remove(mockProject1));
-            mockRepo.Setup(repo => repo.Add(It.IsAny<Projects>())).Callback((Projects proj) => allProjects.Add(proj));
+            mockRepo.Setup(repo => repo.Delete(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Remove(proj));
+            mockRepo.Setup(repo => repo.Add(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Add(proj));
 
             projectBL = new ProjectBusinessLogic(mockRepo.Object);
         }
@@ -101,13 +102,15 @@ namespace BugTrackerTesting
     {
         private TicketBusinessLogic ticketBL;
         private List<Tickets> allTickets;
+        private ApplicationUser user;
 
         [TestInitialize]
         public void Initialize()
         {
             Tickets mockTicket1 = new Tickets() { Id = 1, Description = "Bop", Created = DateTime.Today, };
             Tickets mockTicket2 = new Tickets() { Id = 2, Description = "Jenga", Created = DateTime.Now, };
-            Tickets mockTicket3 = new Tickets() { Id = 3, Description = "Plonk", Created = DateTime.MinValue, };
+            Tickets mockTicket3 = new Tickets() { Id = 3, Description = "", Created = DateTime.MinValue, };
+            ApplicationUser newUser = new ApplicationUser();
 
             allTickets = new List<Tickets>() { mockTicket1, mockTicket2, mockTicket3, };
 
@@ -116,6 +119,10 @@ namespace BugTrackerTesting
             mockRepo.Setup(repo => repo.Get(It.IsAny<int>())).Returns<int>((num) => allTickets.First(ticket => ticket.Id == num));
 
             mockRepo.Setup(repo => repo.GetAll()).Returns(allTickets);
+            mockRepo.Setup(repo => repo.GetList(It.IsAny<Func<Tickets, bool>>())).Returns<Func<Tickets, bool>>((func) => allTickets.Where(func).ToList());
+
+            mockRepo.Setup(repo => repo.Add(It.IsAny<Tickets>())).Callback<Tickets>((ticket) => allTickets.Add(ticket));
+            mockRepo.Setup(repo => repo.Delete(It.IsAny<Tickets>())).Callback<Tickets>((ticket) => allTickets.Remove(ticket));
 
             ticketBL = new TicketBusinessLogic(mockRepo.Object);
         }
@@ -134,6 +141,27 @@ namespace BugTrackerTesting
             var expectedFirstTicket = allTickets.First();
 
             Assert.AreSame(expectedFirstTicket, actualFirstTicket);
+
+            var actualSecondTicket = ticketBL.GetTicket(2);
+            var expectedSecondTicket = allTickets.First(t => t.Id == 2);
+
+            Assert.AreSame(expectedSecondTicket, actualSecondTicket);
+        }
+
+        [TestMethod]
+        public void GetTicketListTest()
+        {
+            var whereList = ticketBL.GetTicketsList(ticket => !String.IsNullOrWhiteSpace(ticket.Description));
+
+            CollectionAssert.Contains(whereList, allTickets[0]);
+            CollectionAssert.Contains(whereList, allTickets[1]);
+            CollectionAssert.DoesNotContain(whereList, allTickets[2]);
+        }
+
+        [TestMethod]
+        public void CreateTicketTest()
+        {
+
         }
     }
 }
