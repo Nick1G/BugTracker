@@ -1,4 +1,6 @@
-﻿namespace BugTracker.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace BugTracker.Models
 {
     public class TicketComments
     {
@@ -6,8 +8,10 @@
         public string Comment { get; set; }
         public DateTime Created { get; set; }
         public int TicketId { get; set; }
+        [ForeignKey("TicketId")]
         public Tickets Ticket { get; set; }
         public string UserId { get; set; }
+        [ForeignKey("UserId")]
         public ApplicationUser User { get; set; }
 
         public TicketComments(string comment, int ticketId, string userId)

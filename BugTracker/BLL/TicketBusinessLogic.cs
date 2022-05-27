@@ -56,11 +56,5 @@ namespace BugTracker.BLL
             repo.Delete(ticket);
             repo.Save();
         }
-
-        public void Comment(TicketComments entity)
-        {
-            ticketCommentRepo.Add(entity);
-            ticketCommentRepo.Save();
-        }
     }
 }

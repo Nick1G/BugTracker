@@ -70,25 +70,24 @@ namespace BugTracker.Controllers
             }
          }
 
-        public IActionResult CreateComment()
+        public IActionResult CreateComment(int? id)
         {
-
-            ViewBag.Tickets = new SelectList(TicketBL.GetTicketsList(_ => true), "Id", "Title");
+            ViewBag.TicketId = id;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateComment([Bind("Comment,TicketId")]TicketComments Comment)
+        public IActionResult CreateComment(string comment, int ticketId)
         {
-            var user = _userManager.Users.First(u => u.UserName == User.Identity.Name);
-            Comment.Created = DateTime.Now;
-            Comment.UserId = user.Id;
+            Tickets ticket = TicketBL.GetTicket(ticketId);
+            string username = User.Identity.Name;
+            ApplicationUser user = db.Users.First(u => u.Email == username);
+            TicketComments comments = new TicketComments(comment, ticket.Id, user.Id);
+            db.TicketComments.Add(comments);
+            db.SaveChanges();
 
-            TicketBL.Comment(Comment);
-
-            return RedirectToAction(nameof(Index));
-
+            return RedirectToRoute(new { action = "Details", id = ticketId });
         }
 
         public async Task<IActionResult> AssignDeveloper(int? id)

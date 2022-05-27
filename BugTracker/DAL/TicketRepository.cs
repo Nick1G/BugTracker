@@ -42,6 +42,8 @@ namespace BugTracker.DAL
                                   .Include("OwnerUser")
                                   .Include("AssignedToUser")
                                   .Include("TicketHistories")
+                                  .Include("TicketComments")
+                                  .Include("TicketComments.User")
                                   .Include("TicketHistories.User").First(t => t.Id == id);
         }
 
@@ -53,6 +55,7 @@ namespace BugTracker.DAL
                                   .Include("TicketPriority")
                                   .Include("OwnerUser")
                                   .Include("AssignedToUser")
+                                  .Include("TicketComments")
                                   .Include("TicketHistories").First(firstFunction);
         }
 
@@ -75,6 +78,7 @@ namespace BugTracker.DAL
                                   .Include("TicketPriority")
                                   .Include("OwnerUser")
                                   .Include("AssignedToUser")
+                                  .Include("TicketComments")
                                   .Include("TicketHistories").Where(whereFunction).ToList();
         }
     }

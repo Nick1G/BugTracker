@@ -17,9 +17,8 @@
                 <input asp-for="Comment" class="form-control" />
                 <span asp-validation-for="Comment" class="text-danger"></span>
             </div>
-            <div class="form-group">
-                <label asp-for="TicketId" class="control-label">Ticket</label>
-                <select asp-for="TicketId" class ="form-control" asp-items="ViewBag.Tickets"></select>
+            <div>
+                <input type="hidden" asp-for="TicketId" value="@ViewBag.TicketId" class ="form-control" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
