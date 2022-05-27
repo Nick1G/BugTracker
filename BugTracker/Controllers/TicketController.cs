@@ -5,6 +5,7 @@ using BugTracker.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BugTracker.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTracker.Controllers
 {
@@ -12,13 +13,15 @@ namespace BugTracker.Controllers
     {
         private ProjectBusinessLogic ProjectBL { get; set; }
         private TicketBusinessLogic TicketBL { get; set; }
+        private UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext db;
 
-        public TicketController(ApplicationDbContext context)
+        public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             db = context;
-            TicketBL = new TicketBusinessLogic(new TicketRepository(context));
+            TicketBL = new TicketBusinessLogic(new TicketRepository(context), new TicketCommentRepository(context));
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
+            _userManager = userManager;
         }
 
         public IActionResult Index()
@@ -62,6 +65,27 @@ namespace BugTracker.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+         }
+
+        public IActionResult CreateComment()
+        {
+
+            ViewBag.Tickets = new SelectList(TicketBL.GetTicketsList(_ => true), "Id", "Title");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateComment([Bind("Comment,TicketId")]TicketComments Comment)
+        {
+            var user = _userManager.Users.First(u => u.UserName == User.Identity.Name);
+            Comment.Created = DateTime.Now;
+            Comment.UserId = user.Id;
+
+            TicketBL.Comment(Comment);
+
+            return RedirectToAction(nameof(Index));
+
         }
     }
 }

@@ -6,10 +6,12 @@ namespace BugTracker.BLL
     public class TicketBusinessLogic
     {
         IRepository<Tickets> repo;
+        IRepository<TicketComments> ticketCommentRepo;
 
-        public TicketBusinessLogic(IRepository<Tickets> repoArg)
+        public TicketBusinessLogic(IRepository<Tickets> repoArg, IRepository<TicketComments> ticketCommentRepo)
         {
             repo = repoArg;
+            this.ticketCommentRepo = ticketCommentRepo;
         }
 
         public List<Tickets> AllTickets()
@@ -48,6 +50,12 @@ namespace BugTracker.BLL
         {
             repo.Delete(ticket);
             repo.Save();
+        }
+
+        public void Comment(TicketComments entity)
+        {
+            ticketCommentRepo.Add(entity);
+            ticketCommentRepo.Save();
         }
     }
 }
