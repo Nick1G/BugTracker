@@ -31,7 +31,6 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Delete(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Remove(proj));
             mockRepo.Setup(repo => repo.Add(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Add(proj));
-            mockRepo.Setup(repo => repo.Update(It.IsAny<Projects>())).CallBase();
 
             projectBL = new ProjectBusinessLogic(mockRepo.Object);
         }
