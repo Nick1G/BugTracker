@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.Controllers
 {
@@ -80,15 +81,21 @@ namespace BugTracker.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult AssignDeveloper(int? ticketId, string? userId)
         {
+            string username = User.Identity.Name;
+            ApplicationUser currentUser = db.Users.First(u => u.Email == username);
             Tickets ticket = TicketBL.GetTicket((int)ticketId);
             TicketStatuses status = db.TicketStatuses.First(s => s.Name == "Assigned");
             ApplicationUser user = db.Users.Find(userId);
             if (user != null && ticket != null)
             {
+                db.Entry(ticket).State = EntityState.Unchanged;
+                db.Entry(user).State = EntityState.Unchanged;
                 ticket.AssignedToUser = user;
                 ticket.AssignedToUserId = user.Id;
                 ticket.TicketStatus = status;
                 user.AssignedToTickets.Add(ticket);
+                TicketHistories history = new TicketHistories("Unassigned", $"Assigned to developer {user.Email}", (int)ticketId, currentUser.Id, Property.AssignedToUser);
+                ticket.TicketHistories.Add(history);
                 db.SaveChanges();
             }
             return RedirectToRoute(new { action = "Details", id = ticketId });
@@ -100,6 +107,7 @@ namespace BugTracker.Controllers
             ViewBag.TicketType = new SelectList(db.TicketTypes, "Id", "Name");
             ViewBag.TicketPriorities = new SelectList(db.TicketPriorities, "Id", "Name");
             Tickets ticket = TicketBL.GetTicket((int)id);
+            ViewBag.Created = ticket.Created;
             ViewBag.OwnerUserId = ticket.OwnerUserId;
             ViewBag.AssignedUserId = ticket.AssignedToUserId;
             ViewBag.ProjectId = ticket.ProjectId;
@@ -108,17 +116,59 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int id, [Bind("Id, Title, Description, Updated, OwnerUserId, AssignedToUserId, ProjectId, TicketTypeId, TicketStatusId, TicketPriorityId")] Tickets ticket)
+        public IActionResult Edit(int? id, Tickets ticket)
         {
-            if (id != ticket.Id)
-            {
-                return NotFound();
-            }
-
+            string username = User.Identity.Name;
+            ApplicationUser user = db.Users.First(u => u.Email == username);
+            Tickets oldTicket = TicketBL.GetTicket((int)id);
             if (ModelState.IsValid)
             {
                 TicketBL.UpdateTicket(ticket);
             }
+            Tickets newTicket = TicketBL.GetTicket((int)ticket.Id);
+            string oldValue;
+            string newValue;
+            if (oldTicket.Title != ticket.Title)
+            {
+                oldValue = oldTicket.Title;
+                newValue = ticket.Title;
+                TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Title);
+                ticket.TicketHistories.Add(history);
+                db.SaveChanges();
+            }
+            if (oldTicket.Description != ticket.Description)
+            {
+                oldValue = oldTicket.Description;
+                newValue = ticket.Description;
+                TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Description);
+                ticket.TicketHistories.Add(history);
+                db.SaveChanges();
+            }
+            if (oldTicket.TicketType.Name != newTicket.TicketType.Name)
+            {
+                oldValue = oldTicket.TicketType.Name;
+                newValue = newTicket.TicketType.Name;
+                TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Type);
+                ticket.TicketHistories.Add(history);
+                db.SaveChanges();
+            }
+            if (oldTicket.TicketStatus.Name != newTicket.TicketStatus.Name)
+            {
+                oldValue = oldTicket.TicketStatus.Name;
+                newValue = newTicket.TicketStatus.Name;
+                TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Status);
+                ticket.TicketHistories.Add(history);
+                db.SaveChanges();
+            }
+            if (oldTicket.TicketPriority.Name != newTicket.TicketPriority.Name)
+            {
+                oldValue = oldTicket.TicketPriority.Name;
+                newValue = newTicket.TicketPriority.Name;
+                TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Priority);
+                ticket.TicketHistories.Add(history);
+                db.SaveChanges();
+            }
+            
             return RedirectToRoute(new { action = "Details", id = id });
         }
     }

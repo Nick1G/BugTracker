@@ -73,6 +73,20 @@
     </dl>
 </div>
 <div>
+    <h4>History</h4>
+    @foreach(var item in Model.TicketHistories)
+    {
+        @if(item.Property == Property.AssignedToUser)
+        {
+            <p>Ticket assigned to developer @item.NewValue by @item.User.Email at @item.Changed</p> <br />
+        }
+        else
+        {
+            <p>Ticket @item.Property changed from @item.OldValue to @item.NewValue by @item.User.Email at @item.Changed </p> <br />
+        }
+    }
+</div>
+<div>
     @if(Model.AssignedToUser == null){
         <a asp-action="AssignDeveloper" asp-route-id="@Model?.Id">Assign Developer</a> }
     | <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
