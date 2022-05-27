@@ -5,6 +5,7 @@ using BugTracker.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BugTracker.Models;
+using BugTracker.Models.AssessmentClasses;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,7 +23,7 @@ namespace BugTracker.Controllers
         public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> _userManager)
         {
             db = context;
-            TicketBL = new TicketBusinessLogic(new TicketRepository(context), new TicketCommentRepository(context));
+            TicketBL = new TicketBusinessLogic(new TicketRepository(context)/*, new TicketCommentRepository(context)*/);
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
             userManager = _userManager;
         }

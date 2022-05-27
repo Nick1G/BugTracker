@@ -6,12 +6,12 @@ namespace BugTracker.BLL
     public class TicketBusinessLogic
     {
         IRepository<Tickets> repo;
-        IRepository<TicketComments> ticketCommentRepo;
+        //IRepository<TicketComments> ticketCommentRepo;
 
-        public TicketBusinessLogic(IRepository<Tickets> repoArg, IRepository<TicketComments> ticketCommentRepo)
+        public TicketBusinessLogic(IRepository<Tickets> repoArg/*, IRepository<TicketComments> ticketCommentRepo*/)
         {
             repo = repoArg;
-            this.ticketCommentRepo = ticketCommentRepo;
+            //this.ticketCommentRepo = ticketCommentRepo;
         }
 
         public List<Tickets> AllTickets()
