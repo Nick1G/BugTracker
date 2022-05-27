@@ -5,6 +5,7 @@ using BugTracker.Data;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using BugTracker.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BugTracker.Controllers
 {
@@ -13,17 +14,47 @@ namespace BugTracker.Controllers
         private ProjectBusinessLogic ProjectBL { get; set; }
         private TicketBusinessLogic TicketBL { get; set; }
         private readonly ApplicationDbContext db;
+        private readonly UserManager<ApplicationUser> _userManager;
 
-        public TicketController(ApplicationDbContext context)
+        public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             db = context;
             TicketBL = new TicketBusinessLogic(new TicketRepository(context));
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
+            _userManager = userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(string? listType)
         {
-            return View(TicketBL.AllTickets());
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    ViewBag.User = "Admin";
+                else if (await _userManager.IsInRoleAsync(user, "Project Manager"))
+                    ViewBag.User = "Manager";
+                else if (await _userManager.IsInRoleAsync(user, "Developer"))
+                    ViewBag.User = "Dev";
+                else if (await _userManager.IsInRoleAsync(user, "Submitter"))
+                    ViewBag.User = "Submitter";
+            }
+
+            var ticketsList = TicketBL.AllTickets();
+
+            switch (listType)
+            {
+                case "ProjectTickets":
+                    ticketsList = TicketBL.GetTicketsList(ticket => ticket.Project.Users.Contains(user));
+                    break;
+                case "AssignedTickets":
+                    ticketsList = TicketBL.GetAssignedTickets(user);
+                    break;
+                case "OwnedTickets":
+                    ticketsList = TicketBL.GetOwnedTickets(user);
+                    break;
+            }
+
+            return View(ticketsList);
         }
 
         [Authorize(Roles = "Submitter")]

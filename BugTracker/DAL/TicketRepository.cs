@@ -55,7 +55,7 @@ namespace BugTracker.DAL
 
         public ICollection<Tickets> GetList(Func<Tickets, bool> whereFunction)
         {
-            return Context.Tickets.Where(whereFunction).ToList();
+            return Context.Tickets.Include(tick => tick.Project).ThenInclude(proj => proj.Users).Where(whereFunction).ToList();
         }
     }
 }
