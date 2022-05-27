@@ -4,3 +4,4 @@ global using BugTracker.BLL;
 global using BugTracker.Data;
 global using BugTracker.DAL;
 global using BugTracker.Models;
+global using Microsoft.EntityFrameworkCore;
