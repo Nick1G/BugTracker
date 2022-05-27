@@ -26,7 +26,12 @@ namespace BugTracker.BLL
 
         public List<Tickets> GetAssignedTickets(ApplicationUser user)
         {
-            return GetTicketsList(p => p.AssignedToUserId == user.Id);
+            return GetTicketsList(t => t.AssignedToUserId == user.Id);
+        }
+
+        public List<Tickets> GetOwnedTickets(ApplicationUser user)
+        {
+            return GetTicketsList(t => t.OwnerUserId == user.Id);
         }
 
         public Tickets GetTicket(int id)
