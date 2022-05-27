@@ -8,6 +8,7 @@ using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
+
 namespace BugTracker.Controllers
 {
     [Authorize]
@@ -15,13 +16,13 @@ namespace BugTracker.Controllers
     {
         private ProjectBusinessLogic ProjectBL { get; set; }
         private TicketBusinessLogic TicketBL { get; set; }
+        private UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> userManager;
-
         public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> _userManager)
         {
             db = context;
-            TicketBL = new TicketBusinessLogic(new TicketRepository(context));
+            TicketBL = new TicketBusinessLogic(new TicketRepository(context), new TicketCommentRepository(context));
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
             userManager = _userManager;
         }
@@ -67,6 +68,27 @@ namespace BugTracker.Controllers
             {
                 return RedirectToAction(nameof(Index));
             }
+         }
+
+        public IActionResult CreateComment()
+        {
+
+            ViewBag.Tickets = new SelectList(TicketBL.GetTicketsList(_ => true), "Id", "Title");
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public IActionResult CreateComment([Bind("Comment,TicketId")]TicketComments Comment)
+        {
+            var user = _userManager.Users.First(u => u.UserName == User.Identity.Name);
+            Comment.Created = DateTime.Now;
+            Comment.UserId = user.Id;
+
+            TicketBL.Comment(Comment);
+
+            return RedirectToAction(nameof(Index));
+
         }
 
         public async Task<IActionResult> AssignDeveloper(int? id)
