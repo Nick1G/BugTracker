@@ -6,10 +6,12 @@ namespace BugTracker.BLL
     public class TicketBusinessLogic
     {
         IRepository<Tickets> repo;
+        IRepository<TicketComments> ticketCommentRepo;
 
-        public TicketBusinessLogic(IRepository<Tickets> repoArg)
+        public TicketBusinessLogic(IRepository<Tickets> repoArg, IRepository<TicketComments> ticketCommentRepo)
         {
             repo = repoArg;
+            this.ticketCommentRepo = ticketCommentRepo;
         }
 
         public List<Tickets> AllTickets()
@@ -24,7 +26,12 @@ namespace BugTracker.BLL
 
         public List<Tickets> GetAssignedTickets(ApplicationUser user)
         {
-            return GetTicketsList(p => p.AssignedToUserId == user.Id);
+            return GetTicketsList(t => t.AssignedToUserId == user.Id);
+        }
+
+        public List<Tickets> GetOwnedTickets(ApplicationUser user)
+        {
+            return GetTicketsList(t => t.OwnerUserId == user.Id);
         }
 
         public Tickets GetTicket(int id)

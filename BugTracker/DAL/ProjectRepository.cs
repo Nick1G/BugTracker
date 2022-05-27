@@ -35,22 +35,22 @@ namespace BugTracker.DAL
 
         public Projects Get(int id)
         {
-            return Context.Projects.Include("Users").First(p => p.Id == id);
+            return Context.Projects.Include("Users").Include("Tickets").First(p => p.Id == id);
         }
 
         public Projects Get(Func<Projects, bool> firstFunction)
         {
-            return Context.Projects.First(firstFunction);
+            return Context.Projects.Include("Tickets").First(firstFunction);
         }
 
         public ICollection<Projects> GetAll()
         {
-            return Context.Projects.ToList();
+            return Context.Projects.Include("Tickets").ToList();
         }
 
         public ICollection<Projects> GetList(Func<Projects, bool> whereFunction)
         {
-            return Context.Projects.Include(p => p.Users).Where(whereFunction).ToList();
+            return Context.Projects.Include(p => p.Users).Include("Tickets").Where(whereFunction).ToList();
         }
     }
 }

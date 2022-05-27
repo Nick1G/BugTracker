@@ -49,6 +49,13 @@ body {
     animation-fill-mode: forwards;
 }
 
+.page3 {
+    opacity: 0;
+    animation: fadeInAcross ease 2s;
+    animation-delay: 1.2s;
+    animation-fill-mode: forwards;
+}
+
 @keyframes fadeInAnimation {
     0% {
         opacity: 0;

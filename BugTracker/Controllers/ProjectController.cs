@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.Controllers
 {
+    [Authorize]
     public class ProjectController : Controller
     {
         private ProjectBusinessLogic ProjectBL { get; set; }

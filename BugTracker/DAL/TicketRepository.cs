@@ -35,27 +35,51 @@ namespace BugTracker.DAL
 
         public Tickets Get(int id)
         {
+            return Context.Tickets.AsNoTracking().Include("Project")
+                                  .Include("TicketType")
+                                  .Include("TicketStatus")
+                                  .Include("TicketPriority")
+                                  .Include("OwnerUser")
+                                  .Include("AssignedToUser")
+                                  .Include("TicketHistories")
+                                  .Include("TicketComments")
+                                  .Include("TicketComments.User")
+                                  .Include("TicketHistories.User").First(t => t.Id == id);
+        }
+
+        public Tickets Get(Func<Tickets, bool> firstFunction)
+        {
             return Context.Tickets.Include("Project")
                                   .Include("TicketType")
                                   .Include("TicketStatus")
                                   .Include("TicketPriority")
                                   .Include("OwnerUser")
-                                  .Include("AssignedToUser").First(t => t.Id == id);
-        }
-
-        public Tickets Get(Func<Tickets, bool> firstFunction)
-        {
-            return Context.Tickets.First(firstFunction);
+                                  .Include("AssignedToUser")
+                                  .Include("TicketComments")
+                                  .Include("TicketHistories").First(firstFunction);
         }
 
         public ICollection<Tickets> GetAll()
         {
-            return Context.Tickets.Include("Project").ToList();
+            return Context.Tickets.Include("Project")
+                                  .Include("TicketType")
+                                  .Include("TicketStatus")
+                                  .Include("TicketPriority")
+                                  .Include("OwnerUser")
+                                  .Include("AssignedToUser")
+                                  .Include("TicketHistories").ToList();
         }
 
         public ICollection<Tickets> GetList(Func<Tickets, bool> whereFunction)
         {
-            return Context.Tickets.Where(whereFunction).ToList();
+            return Context.Tickets.Include("Project")
+                                  .Include("TicketType")
+                                  .Include("TicketStatus")
+                                  .Include("TicketPriority")
+                                  .Include("OwnerUser")
+                                  .Include("AssignedToUser")
+                                  .Include("TicketComments")
+                                  .Include("TicketHistories").Where(whereFunction).ToList();
         }
     }
 }
