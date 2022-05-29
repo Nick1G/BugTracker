@@ -27,6 +27,7 @@ namespace BugTracker.Controllers
 
         public async Task<IActionResult> Index(string? listType, int? pageNumber)
         {
+            ViewBag.ListType = listType;
             ApplicationUser user = await _userManager.GetUserAsync(User);
             if (user != null)
             {
