@@ -7,6 +7,31 @@
 <h1>All Tickets</h1>
 
 <p>
+    <a asp-controller="Ticket" asp-action="Create">Submit Ticket</a>
+    <br/>
+    <a asp-controller="Ticket" asp-action="Index" asp-route-listType="@null">View All Tickets</a>
+    @if (ViewBag.User == "Manager" || ViewBag.User == "Dev" || ViewBag.User == "Admin")
+    {
+        <br/>
+        <a asp-controller="Ticket" asp-action="Index" asp-route-listType="ProjectTickets">View Tickets Of Assigned Projects</a>
+    }
+    @if (ViewBag.User == "Dev" || ViewBag.User == "Admin")
+    {
+        <br/>
+        <a asp-controller="Ticket" asp-action="Index" asp-route-listType="AssignedTickets">View Assigned Tickets</a>
+    }
+    @if (ViewBag.User == "Submitter" || ViewBag.User == "Admin")
+    {
+        <br/>
+        <a asp-controller="Ticket" asp-action="Index" asp-route-listType="OwnedTickets">View Submitted Tickets</a>
+    }
+
+    <hr/>
+
+    @*Sorting*@
+
+    
+    
 </p>
 <table class="table">
     <thead>
@@ -17,8 +42,8 @@
             <th>
                 Project
             </th>
-            
-            <th></th>
+
+            <th>Options</th>
         </tr>
     </thead>
     <tbody>
@@ -31,8 +56,8 @@
                 @Html.DisplayFor(modelItem => item.Project.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | 
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }

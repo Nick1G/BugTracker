@@ -74,6 +74,7 @@ namespace BugTracker.DAL
 
         public IQueryable<Tickets> GetList(Expression<Func<Tickets, bool>> whereFunction)
         {
+
             return Context.Tickets.Include("Project")
                                   .Include("TicketType")
                                   .Include("TicketStatus")

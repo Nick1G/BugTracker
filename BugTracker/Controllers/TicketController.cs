@@ -8,8 +8,6 @@ using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-
-
 namespace BugTracker.Controllers
 {
     [Authorize]
@@ -27,17 +25,43 @@ namespace BugTracker.Controllers
             userManager = _userManager;
         }
 
-        public async Task<IActionResult> Index(int? pageNumber)
+        public async Task<IActionResult> Index(string? listType, int? pageNumber)
         {
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    ViewBag.User = "Admin";
+                else if (await _userManager.IsInRoleAsync(user, "Project Manager"))
+                    ViewBag.User = "Manager";
+                else if (await _userManager.IsInRoleAsync(user, "Developer"))
+                    ViewBag.User = "Dev";
+                else if (await _userManager.IsInRoleAsync(user, "Submitter"))
+                    ViewBag.User = "Submitter";
+            }
+
+            var ticketsList = TicketBL.AllTickets();
+
+            switch (listType)
+            {
+                case "ProjectTickets":
+                    ticketsList = TicketBL.GetTicketsList(ticket => ticket.Project.Users.Contains(user));
+                    break;
+                case "AssignedTickets":
+                    ticketsList = TicketBL.GetAssignedTickets(user);
+                    break;
+                case "OwnedTickets":
+                    ticketsList = TicketBL.GetOwnedTickets(user);
+                    break;
+            }
             int pageSize = 10;
-            return View(await PaginatedList<Tickets>.CreateAsync(TicketBL.AllTickets(), pageNumber ?? 1, pageSize));
+            return View(await PaginatedList<Tickets>.CreateAsync(ticketsList, pageNumber ?? 1, pageSize));
         }
 
         [Authorize(Roles = "Submitter")]
-        public IActionResult Create(int? id)
+        public async Task<IActionResult> Create(int? id)
         {
-            string username = User.Identity.Name;
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Email == username);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
             TicketStatuses status = db.TicketStatuses.First(s => s.Name == "Unassigned");
             ViewBag.Status = status.Id;
             ViewBag.UserId = user.Id;
