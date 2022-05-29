@@ -22,14 +22,14 @@ namespace BugTracker.BLL
             return repo.GetList(whereFunc);
         }
 
-        public List<Tickets> GetAssignedTickets(ApplicationUser user)
+        public IQueryable<Tickets> GetAssignedTickets(ApplicationUser user)
         {
-            return (List<Tickets>)GetTicketsList(t => t.AssignedToUserId == user.Id);
+            return GetTicketsList(t => t.AssignedToUserId == user.Id);
         }
 
-        public List<Tickets> GetOwnedTickets(ApplicationUser user)
+        public IQueryable<Tickets> GetOwnedTickets(ApplicationUser user)
         {
-            return (List<Tickets>)GetTicketsList(t => t.OwnerUserId == user.Id);
+            return GetTicketsList(t => t.OwnerUserId == user.Id);
         }
 
         public Tickets GetTicket(int id)
