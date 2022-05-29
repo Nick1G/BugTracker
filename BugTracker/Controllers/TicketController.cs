@@ -58,10 +58,9 @@ namespace BugTracker.Controllers
         }
 
         [Authorize(Roles = "Submitter")]
-        public IActionResult Create(int? id)
+        public async Task<IActionResult> Create(int? id)
         {
-            string username = User.Identity.Name;
-            ApplicationUser user = db.Users.FirstOrDefault(u => u.Email == username);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
             TicketStatuses status = db.TicketStatuses.First(s => s.Name == "Unassigned");
             ViewBag.Status = status.Id;
             ViewBag.UserId = user.Id;
