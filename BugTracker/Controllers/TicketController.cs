@@ -16,13 +16,13 @@ namespace BugTracker.Controllers
         private ProjectBusinessLogic ProjectBL { get; set; }
         private TicketBusinessLogic TicketBL { get; set; }
         private readonly ApplicationDbContext db;
-        private readonly UserManager<ApplicationUser> userManager;
-        public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> _userManager)
+        private readonly UserManager<ApplicationUser> _userManager;
+        public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> userManager)
         {
             db = context;
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
             TicketBL = new TicketBusinessLogic(new TicketRepository(context));
-            userManager = _userManager;
+            _userManager = userManager;
         }
 
         public async Task<IActionResult> Index(string? listType, int? pageNumber)
@@ -118,7 +118,7 @@ namespace BugTracker.Controllers
         public async Task<IActionResult> AssignDeveloper(int? id)
         {
             ViewBag.Id = id;
-            var developers = await userManager.GetUsersInRoleAsync("Developer");
+            var developers = await _userManager.GetUsersInRoleAsync("Developer");
             ViewBag.developers = new SelectList(developers, "Id", "Email");
             return View(developers);
         }

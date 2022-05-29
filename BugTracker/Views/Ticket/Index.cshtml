@@ -7,8 +7,6 @@
 <h1>All Tickets</h1>
 
 <p>
-    <a asp-controller="Ticket" asp-action="Create">Submit Ticket</a>
-    <br/>
     <a asp-controller="Ticket" asp-action="Index" asp-route-listType="@null">View All Tickets</a>
     @if (ViewBag.User == "Manager" || ViewBag.User == "Dev" || ViewBag.User == "Admin")
     {
@@ -29,8 +27,6 @@
     <hr/>
 
     @*Sorting*@
-
-    
     
 </p>
 <table class="table">
