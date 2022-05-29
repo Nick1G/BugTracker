@@ -1,37 +1,35 @@
 ﻿using BugTracker.DAL;
 using BugTracker.Models;
+using System.Linq.Expressions;
 
 namespace BugTracker.BLL
 {
     public class TicketBusinessLogic
     {
         IRepository<Tickets> repo;
-        IRepository<TicketComments> ticketCommentRepo;
-
-        public TicketBusinessLogic(IRepository<Tickets> repoArg, IRepository<TicketComments> ticketCommentRepo)
+        public TicketBusinessLogic(IRepository<Tickets> repoArg)
         {
             repo = repoArg;
-            this.ticketCommentRepo = ticketCommentRepo;
         }
 
-        public List<Tickets> AllTickets()
+        public IQueryable<Tickets> AllTickets()
         {
-            return repo.GetAll().ToList();
+            return repo.GetAll();
         }
 
-        public List<Tickets> GetTicketsList(Func<Tickets, bool> whereFunc)
+        public IQueryable<Tickets> GetTicketsList(Expression<Func<Tickets, bool>> whereFunc)
         {
-            return repo.GetList(whereFunc).ToList();
+            return repo.GetList(whereFunc);
         }
 
         public List<Tickets> GetAssignedTickets(ApplicationUser user)
         {
-            return GetTicketsList(t => t.AssignedToUserId == user.Id);
+            return (List<Tickets>)GetTicketsList(t => t.AssignedToUserId == user.Id);
         }
 
         public List<Tickets> GetOwnedTickets(ApplicationUser user)
         {
-            return GetTicketsList(t => t.OwnerUserId == user.Id);
+            return (List<Tickets>)GetTicketsList(t => t.OwnerUserId == user.Id);
         }
 
         public Tickets GetTicket(int id)

@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 
+
 namespace BugTracker.Controllers
 {
     [Authorize]
@@ -16,20 +17,20 @@ namespace BugTracker.Controllers
     {
         private ProjectBusinessLogic ProjectBL { get; set; }
         private TicketBusinessLogic TicketBL { get; set; }
-        private UserManager<ApplicationUser> _userManager;
         private readonly ApplicationDbContext db;
         private readonly UserManager<ApplicationUser> userManager;
         public TicketController(ApplicationDbContext context, UserManager<ApplicationUser> _userManager)
         {
             db = context;
-            TicketBL = new TicketBusinessLogic(new TicketRepository(context), new TicketCommentRepository(context));
             ProjectBL = new ProjectBusinessLogic(new ProjectRepository(context));
+            TicketBL = new TicketBusinessLogic(new TicketRepository(context));
             userManager = _userManager;
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Index(int? pageNumber)
         {
-            return View(TicketBL.AllTickets());
+            int pageSize = 10;
+            return View(await PaginatedList<Tickets>.CreateAsync(TicketBL.AllTickets(), pageNumber ?? 1, pageSize));
         }
 
         [Authorize(Roles = "Submitter")]
