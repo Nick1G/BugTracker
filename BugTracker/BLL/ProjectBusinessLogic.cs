@@ -1,6 +1,7 @@
 ﻿using BugTracker.DAL;
 using BugTracker.Models;
 using Microsoft.AspNetCore.Identity;
+using System.Linq.Expressions;
 
 namespace BugTracker.BLL
 {
@@ -13,17 +14,17 @@ namespace BugTracker.BLL
             repo = repoArg;
         }
 
-        public List<Projects> AllProjects()
+        public IQueryable<Projects> AllProjects()
         {
-            return repo.GetAll().ToList();
+            return repo.GetAll();
         }
 
-        public List<Projects> GetProjectsList(Func<Projects, bool> whereFunc)
+        public IQueryable<Projects> GetProjectsList(Expression<Func<Projects, bool>> whereFunc)
         {
-            return repo.GetList(whereFunc).ToList();
+            return repo.GetList(whereFunc);
         }
 
-        public List<Projects> GetAssignedProjects(ApplicationUser user)
+        public IQueryable<Projects> GetAssignedProjects(ApplicationUser user)
         {
             return GetProjectsList(p => p.Users.Any(s => s.Id == user.Id));
         }

@@ -1,6 +1,7 @@
 ﻿using BugTracker.Data;
 using BugTracker.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BugTracker.DAL
 {
@@ -43,14 +44,14 @@ namespace BugTracker.DAL
             return Context.Projects.Include("Tickets").First(firstFunction);
         }
 
-        public ICollection<Projects> GetAll()
+        public IQueryable<Projects> GetAll()
         {
-            return Context.Projects.Include("Tickets").ToList();
+            return Context.Projects.Include("Tickets");
         }
 
-        public ICollection<Projects> GetList(Func<Projects, bool> whereFunction)
+        public IQueryable<Projects> GetList(Expression<Func<Projects, bool>> whereFunction)
         {
-            return Context.Projects.Include(p => p.Users).Include("Tickets").Where(whereFunction).ToList();
+            return Context.Projects.Include(p => p.Users).Include("Tickets").Where(whereFunction);
         }
     }
 }

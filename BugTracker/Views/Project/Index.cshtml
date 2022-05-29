@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BugTracker.Models.Projects>
+﻿@model PaginatedList<BugTracker.Models.Projects>
 
 @{
     ViewData["Title"] = "Index";
@@ -20,7 +20,7 @@
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Name)
+                Name
             </th>
             <th>
                 Options
@@ -42,3 +42,20 @@
 }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+
+<a asp-action="Index" asp-route-allView="@ViewBag.allView"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index" asp-route-allView="@ViewBag.allView"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
