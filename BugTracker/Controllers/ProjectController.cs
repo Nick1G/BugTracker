@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BugTracker.Controllers
 {
+    [Authorize]
     public class ProjectController : Controller
     {
         private ProjectBusinessLogic ProjectBL { get; set; }
@@ -24,8 +25,10 @@ namespace BugTracker.Controllers
         }
 
         [Authorize(Roles = "Admin, Project Manager, Developer, Submitter")]
-        public async Task<IActionResult> Index(bool? allView)
+        public async Task<IActionResult> Index(bool? allView, int? pageNumber)
         {
+            ViewBag.allView = allView;
+            int pageSize = 10;
             ApplicationUser user = await _userManager.GetUserAsync(User);
             IList<string> roles = await _userManager.GetRolesAsync(user);
 
@@ -35,9 +38,9 @@ namespace BugTracker.Controllers
                 ViewBag.Manager = null;
 
             if (allView == false || allView == null)
-                return View(ProjectBL.GetAssignedProjects(user));
+                return View(await PaginatedList<Projects>.CreateAsync(ProjectBL.GetAssignedProjects(user), pageNumber ?? 1, pageSize));
             else
-                return View(ProjectBL.AllProjects());
+                return View(await PaginatedList<Projects>.CreateAsync(ProjectBL.AllProjects(), pageNumber ?? 1, pageSize));
 
         }
 

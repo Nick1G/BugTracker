@@ -1,6 +1,7 @@
 ﻿using BugTracker.Data;
 using BugTracker.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BugTracker.DAL
 {
@@ -35,27 +36,53 @@ namespace BugTracker.DAL
 
         public Tickets Get(int id)
         {
+            return Context.Tickets.AsNoTracking().Include("Project")
+                                  .Include("TicketType")
+                                  .Include("TicketStatus")
+                                  .Include("TicketPriority")
+                                  .Include("OwnerUser")
+                                  .Include("AssignedToUser")
+                                  .Include("TicketHistories")
+                                  .Include("TicketComments")
+                                  .Include("TicketComments.User")
+                                  .Include("TicketHistories.User").First(t => t.Id == id);
+        }
+
+        public Tickets Get(Func<Tickets, bool> firstFunction)
+        {
             return Context.Tickets.Include("Project")
                                   .Include("TicketType")
                                   .Include("TicketStatus")
                                   .Include("TicketPriority")
                                   .Include("OwnerUser")
-                                  .Include("AssignedToUser").First(t => t.Id == id);
+                                  .Include("AssignedToUser")
+                                  .Include("TicketComments")
+                                  .Include("TicketHistories").First(firstFunction);
         }
 
-        public Tickets Get(Func<Tickets, bool> firstFunction)
+        public IQueryable<Tickets> GetAll()
         {
-            return Context.Tickets.First(firstFunction);
+            return Context.Tickets.AsNoTracking()
+                                  .Include("Project")
+                                  .Include("TicketType")
+                                  .Include("TicketStatus")
+                                  .Include("TicketPriority")
+                                  .Include("OwnerUser")
+                                  .Include("AssignedToUser")
+                                  .Include("TicketHistories");
         }
 
-        public ICollection<Tickets> GetAll()
+        public IQueryable<Tickets> GetList(Expression<Func<Tickets, bool>> whereFunction)
         {
-            return Context.Tickets.Include("Project").ToList();
-        }
 
-        public ICollection<Tickets> GetList(Func<Tickets, bool> whereFunction)
-        {
-            return Context.Tickets.Include(tick => tick.Project).ThenInclude(proj => proj.Users).Where(whereFunction).ToList();
+            return Context.Tickets.Include("Project")
+                                  .Include("TicketType")
+                                  .Include("TicketStatus")
+                                  .Include("TicketPriority")
+                                  .Include("OwnerUser")
+                                  .Include("AssignedToUser")
+                                  .Include("TicketComments")
+                                  .Include("TicketHistories").Where(whereFunction);
         }
     }
 }

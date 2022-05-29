@@ -1,4 +1,6 @@
-﻿namespace BugTracker.DAL
+﻿using System.Linq.Expressions;
+
+namespace BugTracker.DAL
 {
     public interface IRepository<T> where T : class
     {
@@ -9,7 +11,7 @@
 
         T Get(int id);
         T Get(Func<T, bool> firstFunction);
-        ICollection<T> GetAll();
-        ICollection<T> GetList(Func<T, bool> whereFunction);
+        IQueryable<T> GetAll();
+        IQueryable<T> GetList(Expression<Func<T, bool>> whereFunction); 
     }
 }
