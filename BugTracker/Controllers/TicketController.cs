@@ -130,8 +130,23 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    ViewBag.User = "Admin";
+                else if (await _userManager.IsInRoleAsync(user, "Project Manager"))
+                    ViewBag.User = "Manager";
+                else if (await _userManager.IsInRoleAsync(user, "Developer"))
+                    ViewBag.User = "Dev";
+                else if (await _userManager.IsInRoleAsync(user, "Submitter"))
+                    ViewBag.User = "Submitter";
+            }
+
+            ViewBag.UserInfo = user;
+
             Tickets ticket = TicketBL.GetTicket((int)id);
             if (ticket != null)
             {
@@ -151,16 +166,47 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateComment(string comment, int ticketId)
+        public async Task<IActionResult> CreateComment(string comment, int ticketId)
         {
             Tickets ticket = TicketBL.GetTicket(ticketId);
-            string username = User.Identity.Name;
-            ApplicationUser user = db.Users.First(u => u.Email == username);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
             TicketComments comments = new TicketComments(comment, ticket.Id, user.Id);
             db.TicketComments.Add(comments);
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
             return RedirectToRoute(new { action = "Details", id = ticketId });
+        }
+
+        public async Task<IActionResult> AddAttachment(int? id)
+        {
+            if (id != null)
+            {
+                ViewBag.TicketId = id;
+                return View();
+            }
+
+            return RedirectToAction("Index", new { listType = "", pageNumber = 1 });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddAttachment(int ticketId, string filePath, string description, string fileUrl)
+        {
+            try
+            {
+                Tickets ticket = TicketBL.GetTicket(ticketId);
+                ApplicationUser user = await _userManager.GetUserAsync(User);
+                TicketAttachments attachment = new TicketAttachments(filePath, fileUrl, description, ticket.Id, user.Id);
+                db.TicketAttachments.Add(attachment);
+                ticket.TicketAttachments.Add(attachment);
+                await db.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
+
+            return RedirectToAction("Details", new { id = ticketId });
         }
 
         [Authorize(Roles = "Admin, Project Manager")]
@@ -174,13 +220,12 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AssignDeveloper(int? ticketId, string? userId)
+        public async Task<IActionResult> AssignDeveloper(int? ticketId, string? userId)
         {
-            string username = User.Identity.Name;
-            ApplicationUser currentUser = db.Users.First(u => u.Email == username);
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             Tickets ticket = TicketBL.GetTicket((int)ticketId);
             TicketStatuses status = db.TicketStatuses.First(s => s.Name == "Assigned");
-            ApplicationUser user = db.Users.Find(userId);
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
             if (user != null && ticket != null)
             {
                 db.Entry(ticket).State = EntityState.Unchanged;
@@ -191,7 +236,7 @@ namespace BugTracker.Controllers
                 user.AssignedToTickets.Add(ticket);
                 TicketHistories history = new TicketHistories("Unassigned", $"Assigned to developer {user.Email}", (int)ticketId, currentUser.Id, Property.AssignedToUser);
                 ticket.TicketHistories.Add(history);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             return RedirectToRoute(new { action = "Details", id = ticketId });
         }
@@ -211,10 +256,9 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int? id, Tickets ticket)
+        public async Task<IActionResult> Edit(int? id, Tickets ticket)
         {
-            string username = User.Identity.Name;
-            ApplicationUser user = db.Users.First(u => u.Email == username);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
             Tickets oldTicket = TicketBL.GetTicket((int)id);
             if (ModelState.IsValid)
             {
@@ -229,7 +273,7 @@ namespace BugTracker.Controllers
                 newValue = ticket.Title;
                 TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Title);
                 ticket.TicketHistories.Add(history);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             if (oldTicket.Description != ticket.Description)
             {
@@ -237,7 +281,7 @@ namespace BugTracker.Controllers
                 newValue = ticket.Description;
                 TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Description);
                 ticket.TicketHistories.Add(history);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             if (oldTicket.TicketType.Name != newTicket.TicketType.Name)
             {
@@ -245,7 +289,7 @@ namespace BugTracker.Controllers
                 newValue = newTicket.TicketType.Name;
                 TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Type);
                 ticket.TicketHistories.Add(history);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             if (oldTicket.TicketStatus.Name != newTicket.TicketStatus.Name)
             {
@@ -253,7 +297,7 @@ namespace BugTracker.Controllers
                 newValue = newTicket.TicketStatus.Name;
                 TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Status);
                 ticket.TicketHistories.Add(history);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             if (oldTicket.TicketPriority.Name != newTicket.TicketPriority.Name)
             {
@@ -261,7 +305,7 @@ namespace BugTracker.Controllers
                 newValue = newTicket.TicketPriority.Name;
                 TicketHistories history = new TicketHistories(oldValue, newValue, ticket.Id, user.Id, Property.Priority);
                 ticket.TicketHistories.Add(history);
-                db.SaveChanges();
+                await db.SaveChangesAsync();
             }
             
             return RedirectToRoute(new { action = "Details", id = id });

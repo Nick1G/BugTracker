@@ -20,7 +20,7 @@ namespace BugTracker.Data
         }
 
         public DbSet<Projects> Projects { get; set; }
-        public DbSet<ProjectUsers> ProjectUsers { get; set; }
+
         public DbSet<TicketAttachments> TicketAttachments { get; set; }
         public DbSet<TicketComments> TicketComments { get; set; }
         public DbSet<TicketHistories> TicketHistories { get; set; }

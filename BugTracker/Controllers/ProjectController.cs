@@ -51,10 +51,9 @@ namespace BugTracker.Controllers
         }
 
         [HttpPost]
-        public IActionResult CreateProject([Bind("Id, Name")] Projects project)
+        public async Task<IActionResult> CreateProject([Bind("Id, Name")] Projects project)
         {
-            string username = User.Identity.Name;
-            ApplicationUser user = db.Users.First(u => u.Email == username);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
             if (ModelState.IsValid)
             {
                 user.Projects.Add(project);
@@ -139,12 +138,12 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AssignUsers(int? projectId, string? userId)
+        public async Task<IActionResult> AssignUsers(int? projectId, string? userId)
         {
             ViewBag.projectId = projectId;
             ViewBag.Users = new SelectList(db.Users, "Id", "Email");
             Projects project = ProjectBL.GetProject((int)projectId);
-            ApplicationUser user = db.Users.Find(userId);
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
 
             if(project != null && user != null)
             {
@@ -168,12 +167,12 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult RemoveUsers(int? projectId, string? userId)
+        public async Task<IActionResult> RemoveUsers(int? projectId, string? userId)
         {
             ViewBag.projectId = projectId;
             Projects project = ProjectBL.GetProject((int)projectId);
             ViewBag.Users = new SelectList(project.Users, "Id", "Email");
-            ApplicationUser user = db.Users.Find(userId);
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
 
             if (project != null && user != null)
             {
