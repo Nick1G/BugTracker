@@ -97,6 +97,14 @@
 </div>
 <div>
     <hr />
+    <h4>Attachments</h4>
+    @foreach(var item in Model.TicketAttachments)
+    {
+        <p>@item.FilePath | @item.FileUrl | @item.Description</p>
+    }
+</div>
+<div>
+    <hr />
     <p>
     @if(Model.AssignedToUser == null)
     {

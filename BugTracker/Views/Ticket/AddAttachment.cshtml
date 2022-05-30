@@ -13,7 +13,7 @@
         <form asp-action="AddAttachment">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
-                <input type="hidden" asp-for="TicketId" value="ViewBag.TicketId" class="form-control"/>
+                <input type="hidden" asp-for="TicketId" value="@ViewBag.TicketId" class="form-control"/>
             </div>
             <div class="form-group">
                 <label asp-for="FilePath" class="control-label"></label>

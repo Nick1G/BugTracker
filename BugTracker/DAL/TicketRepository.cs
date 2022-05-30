@@ -45,6 +45,7 @@ namespace BugTracker.DAL
                                   .Include("TicketHistories")
                                   .Include("TicketComments")
                                   .Include("TicketComments.User")
+                                  .Include("TicketAttachments")
                                   .Include("TicketHistories.User").First(t => t.Id == id);
         }
 
