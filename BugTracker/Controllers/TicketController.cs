@@ -83,8 +83,23 @@ namespace BugTracker.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Details(int? id)
+        public async Task<IActionResult> Details(int? id)
         {
+            ApplicationUser user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                if (await _userManager.IsInRoleAsync(user, "Admin"))
+                    ViewBag.User = "Admin";
+                else if (await _userManager.IsInRoleAsync(user, "Project Manager"))
+                    ViewBag.User = "Manager";
+                else if (await _userManager.IsInRoleAsync(user, "Developer"))
+                    ViewBag.User = "Dev";
+                else if (await _userManager.IsInRoleAsync(user, "Submitter"))
+                    ViewBag.User = "Submitter";
+            }
+
+            ViewBag.UserInfo = user;
+
             Tickets ticket = TicketBL.GetTicket((int)id);
             if (ticket != null)
             {
