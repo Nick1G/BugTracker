@@ -119,16 +119,33 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult CreateComment(string comment, int ticketId)
+        public async Task<IActionResult> CreateComment(string comment, int ticketId)
         {
             Tickets ticket = TicketBL.GetTicket(ticketId);
-            string username = User.Identity.Name;
-            ApplicationUser user = db.Users.First(u => u.Email == username);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
             TicketComments comments = new TicketComments(comment, ticket.Id, user.Id);
             db.TicketComments.Add(comments);
             db.SaveChanges();
 
             return RedirectToRoute(new { action = "Details", id = ticketId });
+        }
+
+        public async Task<IActionResult> AddAttachment(int? id)
+        {
+            if (id != null)
+            {
+                ViewBag.TicketId = id;
+                return View();
+            }
+
+            return RedirectToAction("Index", new { listType = "", pageNumber = 1 });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddAttachment()
+        {
+            return View();
         }
 
         public async Task<IActionResult> AssignDeveloper(int? id)
@@ -141,13 +158,12 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult AssignDeveloper(int? ticketId, string? userId)
+        public async Task<IActionResult> AssignDeveloper(int? ticketId, string? userId)
         {
-            string username = User.Identity.Name;
-            ApplicationUser currentUser = db.Users.First(u => u.Email == username);
+            ApplicationUser currentUser = await _userManager.GetUserAsync(User);
             Tickets ticket = TicketBL.GetTicket((int)ticketId);
             TicketStatuses status = db.TicketStatuses.First(s => s.Name == "Assigned");
-            ApplicationUser user = db.Users.Find(userId);
+            ApplicationUser user = await _userManager.FindByIdAsync(userId);
             if (user != null && ticket != null)
             {
                 db.Entry(ticket).State = EntityState.Unchanged;
@@ -178,10 +194,9 @@ namespace BugTracker.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(int? id, Tickets ticket)
+        public async Task<IActionResult> Edit(int? id, Tickets ticket)
         {
-            string username = User.Identity.Name;
-            ApplicationUser user = db.Users.First(u => u.Email == username);
+            ApplicationUser user = await _userManager.GetUserAsync(User);
             Tickets oldTicket = TicketBL.GetTicket((int)id);
             if (ModelState.IsValid)
             {
