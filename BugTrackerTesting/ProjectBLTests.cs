@@ -6,6 +6,7 @@ namespace BugTrackerTesting
         private ProjectBusinessLogic projectBL;
         private List<Projects> allProjects;
         private ApplicationUser user;
+        private Mock<IRepository<Projects>> mock;
 
         [TestInitialize]
         public void Initialize()
@@ -31,6 +32,8 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Delete(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Remove(proj));
             mockRepo.Setup(repo => repo.Add(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Add(proj));
+
+            mock = mockRepo;
 
             projectBL = new ProjectBusinessLogic(mockRepo.Object);
         }
@@ -69,6 +72,15 @@ namespace BugTrackerTesting
         }
 
         [TestMethod]
+        public void UpdateProjectTest()
+        {
+            var projectToUpdate = allProjects[0];
+            projectToUpdate.Name = "Boop";
+            projectBL.UpdateProject(projectToUpdate);
+            mock.Verify(repo => repo.Update(projectToUpdate), Times.Once);
+        }
+
+        [TestMethod]
         public void GetProjectsListTest()
         {
             var proj1 = allProjects[0];
@@ -103,6 +115,7 @@ namespace BugTrackerTesting
         private TicketBusinessLogic ticketBL;
         private List<Tickets> allTickets;
         private ApplicationUser user;
+        private Mock<IRepository<Tickets>> mock;
 
         [TestInitialize]
         public void Initialize()
@@ -130,6 +143,8 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Add(It.IsAny<Tickets>())).Callback<Tickets>((ticket) => allTickets.Add(ticket));
             mockRepo.Setup(repo => repo.Delete(It.IsAny<Tickets>())).Callback<Tickets>((ticket) => allTickets.Remove(ticket));
+
+            mock = mockRepo;
 
             ticketBL = new TicketBusinessLogic(mockRepo.Object);
         }
@@ -179,6 +194,15 @@ namespace BugTrackerTesting
             var ticketToDelete = allTickets[1];
             ticketBL.DeleteTicket(ticketToDelete);
             CollectionAssert.DoesNotContain(allTickets, ticketToDelete);
+        }
+
+        [TestMethod]
+        public void UpdateTicketTest()
+        {
+            var ticketToUpdate = allTickets[0];
+            ticketToUpdate.Description = "Bagool";
+            ticketBL.UpdateTicket(ticketToUpdate);
+            mock.Verify(repo => repo.Update(ticketToUpdate), Times.Once);
         }
 
         [TestMethod]
