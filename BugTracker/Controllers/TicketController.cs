@@ -25,8 +25,21 @@ namespace BugTracker.Controllers
             _userManager = userManager;
         }
 
-        public async Task<IActionResult> Index(string? listType, int? pageNumber)
+        public async Task<IActionResult> Index(string? listType, int? pageNumber, string? sortOrder)
         {
+            ViewBag.SelectList = new List<SelectListItem>
+            {
+                new SelectListItem("Sort by title", "Title"),
+                new SelectListItem("Sort by project", "Project"),
+                new SelectListItem("Sort by created date", "Created"),
+                new SelectListItem("Sort by updated date", "Updated"),
+                new SelectListItem("Sort by type", "Type"),
+                new SelectListItem("Sort by status", "Status"),
+                new SelectListItem("Sort by priority", "Priority"),
+                new SelectListItem("Sort by owner", "Owner"),
+                new SelectListItem("Sort by assignment", "Assignment"),
+            };
+            ViewBag.SortOrder = sortOrder;
             ViewBag.ListType = listType;
             ApplicationUser user = await _userManager.GetUserAsync(User);
             if (user != null)
@@ -42,6 +55,40 @@ namespace BugTracker.Controllers
             }
 
             var ticketsList = TicketBL.AllTickets();
+
+            switch (sortOrder)
+            {
+                case "Title":
+                    ticketsList = ticketsList.OrderBy(t => t.Title);
+                    break;
+                case "Project":
+                    ticketsList = ticketsList.OrderBy(t => t.Project);
+                    break;
+                case "Created":
+                    ticketsList = ticketsList.OrderBy(t => t.Created);
+                    break;
+                case "Updated":
+                    ticketsList = ticketsList.OrderBy(t => t.Updated);
+                    break;
+                case "Type":
+                    ticketsList = ticketsList.OrderBy(t => t.TicketType.Name);
+                    break;
+                case "Status":
+                    ticketsList = ticketsList.OrderBy(t => t.TicketStatus.Name);
+                    break;
+                case "Priority":
+                    ticketsList = ticketsList.OrderBy(t => t.TicketPriority.Name);
+                    break;
+                case "Owner":
+                    ticketsList = ticketsList.OrderBy(t => t.OwnerUser.Email);
+                    break;
+                case "Assignment":
+                    ticketsList = ticketsList.OrderBy(t => t.AssignedToUser.Email);
+                    break;
+                default:
+                    ticketsList = ticketsList.OrderBy(t => t.Title);
+                    break;
+            }
 
             switch (listType)
             {
@@ -162,6 +209,7 @@ namespace BugTracker.Controllers
             return RedirectToAction("Details", new { id = ticketId });
         }
 
+        [Authorize(Roles = "Admin, Project Manager")]
         public async Task<IActionResult> AssignDeveloper(int? id)
         {
             ViewBag.Id = id;
