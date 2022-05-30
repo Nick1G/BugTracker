@@ -1,6 +1,7 @@
 ﻿using BugTracker.Data;
 using BugTracker.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 
 namespace BugTracker.DAL
 {
@@ -35,7 +36,7 @@ namespace BugTracker.DAL
 
         public Tickets Get(int id)
         {
-            return Context.Tickets.AsNoTracking().Include("Project")
+            return Context.Tickets.Include("Project")
                                   .Include("TicketType")
                                   .Include("TicketStatus")
                                   .Include("TicketPriority")
@@ -44,6 +45,7 @@ namespace BugTracker.DAL
                                   .Include("TicketHistories")
                                   .Include("TicketComments")
                                   .Include("TicketComments.User")
+                                  .Include("TicketAttachments")
                                   .Include("TicketHistories.User").First(t => t.Id == id);
         }
 
@@ -59,7 +61,7 @@ namespace BugTracker.DAL
                                   .Include("TicketHistories").First(firstFunction);
         }
 
-        public ICollection<Tickets> GetAll()
+        public IQueryable<Tickets> GetAll()
         {
             return Context.Tickets.Include("Project")
                                   .Include("TicketType")
@@ -67,11 +69,12 @@ namespace BugTracker.DAL
                                   .Include("TicketPriority")
                                   .Include("OwnerUser")
                                   .Include("AssignedToUser")
-                                  .Include("TicketHistories").ToList();
+                                  .Include("TicketHistories");
         }
 
-        public ICollection<Tickets> GetList(Func<Tickets, bool> whereFunction)
+        public IQueryable<Tickets> GetList(Expression<Func<Tickets, bool>> whereFunction)
         {
+
             return Context.Tickets.Include("Project")
                                   .Include("TicketType")
                                   .Include("TicketStatus")
@@ -79,7 +82,7 @@ namespace BugTracker.DAL
                                   .Include("OwnerUser")
                                   .Include("AssignedToUser")
                                   .Include("TicketComments")
-                                  .Include("TicketHistories").Where(whereFunction).ToList();
+                                  .Include("TicketHistories").Where(whereFunction);
         }
     }
 }

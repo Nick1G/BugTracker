@@ -6,6 +6,7 @@ namespace BugTrackerTesting
         private ProjectBusinessLogic projectBL;
         private List<Projects> allProjects;
         private ApplicationUser user;
+        private Mock<IRepository<Projects>> mock;
 
         [TestInitialize]
         public void Initialize()
@@ -26,11 +27,13 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Get(It.IsAny<int>())).Returns<int>((num) => allProjects.First(project => project.Id == num));
 
-            mockRepo.Setup(repo => repo.GetAll()).Returns(allProjects);
-            mockRepo.Setup(repo => repo.GetList(It.IsAny<Func<Projects, bool>>())).Returns<Func<Projects, bool>>((func) => allProjects.Where(func).ToList());
+            mockRepo.Setup(repo => repo.GetAll()).Returns(allProjects.AsQueryable());
+            mockRepo.Setup(repo => repo.GetList(It.IsAny<Expression<Func<Projects, bool>>>())).Returns<Expression<Func<Projects, bool>>>((func) => allProjects.AsQueryable().Where(func));
 
             mockRepo.Setup(repo => repo.Delete(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Remove(proj));
             mockRepo.Setup(repo => repo.Add(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Add(proj));
+
+            mock = mockRepo;
 
             projectBL = new ProjectBusinessLogic(mockRepo.Object);
         }
@@ -39,7 +42,7 @@ namespace BugTrackerTesting
         public void GetAllProjectsTest()
         {
             var expectedList = allProjects;
-            var actualList = projectBL.AllProjects();
+            var actualList = projectBL.AllProjects().ToList();
 
             CollectionAssert.AreEqual(expectedList, actualList);
         }
@@ -69,13 +72,22 @@ namespace BugTrackerTesting
         }
 
         [TestMethod]
+        public void UpdateProjectTest()
+        {
+            var projectToUpdate = allProjects[0];
+            projectToUpdate.Name = "Boop";
+            projectBL.UpdateProject(projectToUpdate);
+            mock.Verify(repo => repo.Update(projectToUpdate), Times.Once);
+        }
+
+        [TestMethod]
         public void GetProjectsListTest()
         {
             var proj1 = allProjects[0];
             var proj2 = allProjects[1];
             var proj3 = allProjects[2];
 
-            var whereList = projectBL.GetProjectsList(project => project.Name == "Project");
+            var whereList = projectBL.GetProjectsList(project => project.Name == "Project").ToList();
 
             CollectionAssert.Contains(whereList, proj1);
             CollectionAssert.Contains(whereList, proj2);
@@ -89,7 +101,7 @@ namespace BugTrackerTesting
             var proj2 = allProjects[1];
             var proj3 = allProjects[2];
 
-            var assignedList = projectBL.GetAssignedProjects(user);
+            var assignedList = projectBL.GetAssignedProjects(user).ToList();
 
             CollectionAssert.Contains(assignedList, proj1);
             CollectionAssert.Contains(assignedList, proj3);
@@ -103,6 +115,7 @@ namespace BugTrackerTesting
         private TicketBusinessLogic ticketBL;
         private List<Tickets> allTickets;
         private ApplicationUser user;
+        private Mock<IRepository<Tickets>> mock;
 
         [TestInitialize]
         public void Initialize()
@@ -125,11 +138,13 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Get(It.IsAny<int>())).Returns<int>((num) => allTickets.First(ticket => ticket.Id == num));
 
-            mockRepo.Setup(repo => repo.GetAll()).Returns(allTickets);
-            mockRepo.Setup(repo => repo.GetList(It.IsAny<Func<Tickets, bool>>())).Returns<Func<Tickets, bool>>((func) => allTickets.Where(func).ToList());
+            mockRepo.Setup(repo => repo.GetAll()).Returns(allTickets.AsQueryable());
+            mockRepo.Setup(repo => repo.GetList(It.IsAny<Expression<Func<Tickets, bool>>>())).Returns<Expression<Func<Tickets, bool>>>((func) => allTickets.AsQueryable().Where(func));
 
             mockRepo.Setup(repo => repo.Add(It.IsAny<Tickets>())).Callback<Tickets>((ticket) => allTickets.Add(ticket));
             mockRepo.Setup(repo => repo.Delete(It.IsAny<Tickets>())).Callback<Tickets>((ticket) => allTickets.Remove(ticket));
+
+            mock = mockRepo;
 
             ticketBL = new TicketBusinessLogic(mockRepo.Object);
         }
@@ -137,7 +152,7 @@ namespace BugTrackerTesting
         [TestMethod]
         public void GetAllTicketsTest()
         {
-            var tickets = ticketBL.AllTickets();
+            var tickets = ticketBL.AllTickets().ToList();
             CollectionAssert.AreEqual(tickets, allTickets);
         }
 
@@ -158,7 +173,7 @@ namespace BugTrackerTesting
         [TestMethod]
         public void GetTicketListTest()
         {
-            var whereList = ticketBL.GetTicketsList(ticket => !String.IsNullOrWhiteSpace(ticket.Description));
+            var whereList = ticketBL.GetTicketsList(ticket => !String.IsNullOrWhiteSpace(ticket.Description)).ToList();
 
             CollectionAssert.Contains(whereList, allTickets[0]);
             CollectionAssert.Contains(whereList, allTickets[1]);
@@ -182,10 +197,19 @@ namespace BugTrackerTesting
         }
 
         [TestMethod]
+        public void UpdateTicketTest()
+        {
+            var ticketToUpdate = allTickets[0];
+            ticketToUpdate.Description = "Bagool";
+            ticketBL.UpdateTicket(ticketToUpdate);
+            mock.Verify(repo => repo.Update(ticketToUpdate), Times.Once);
+        }
+
+        [TestMethod]
         public void GetAssignedTicketsTest()
         {
             List<Tickets> expectedAssignedTickets = new List<Tickets>() { allTickets[0], allTickets[1], };
-            var actualAssignedTickets = ticketBL.GetAssignedTickets(user);
+            var actualAssignedTickets = ticketBL.GetAssignedTickets(user).ToList();
 
             CollectionAssert.AreEqual(expectedAssignedTickets, actualAssignedTickets);
         }
@@ -194,7 +218,7 @@ namespace BugTrackerTesting
         public void GetOwnedTicketsTest()
         {
             List<Tickets> expectedOwnedTickets = new List<Tickets>() { allTickets[2], };
-            var actualOwnedTickets = ticketBL.GetOwnedTickets(user);
+            var actualOwnedTickets = ticketBL.GetOwnedTickets(user).ToList();
 
             CollectionAssert.AreEqual(expectedOwnedTickets, actualOwnedTickets);
         }

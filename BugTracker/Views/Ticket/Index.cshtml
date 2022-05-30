@@ -1,4 +1,4 @@
-﻿@model IEnumerable<BugTracker.Models.Tickets>
+﻿@model PaginatedList<BugTracker.Models.Tickets>
 
 @{
     ViewData["Title"] = "Index";
@@ -7,18 +7,44 @@
 <h1>All Tickets</h1>
 
 <p>
+    <a asp-controller="Ticket" asp-action="Index" asp-route-listType="@null">View All Tickets</a>
+    @if (ViewBag.User == "Manager" || ViewBag.User == "Dev" || ViewBag.User == "Admin")
+    {
+        <br/>
+        <a asp-controller="Ticket" asp-action="Index" asp-route-listType="ProjectTickets">View Tickets Of Assigned Projects</a>
+    }
+    @if (ViewBag.User == "Dev" || ViewBag.User == "Admin")
+    {
+        <br/>
+        <a asp-controller="Ticket" asp-action="Index" asp-route-listType="AssignedTickets">View Assigned Tickets</a>
+    }
+    @if (ViewBag.User == "Submitter" || ViewBag.User == "Admin")
+    {
+        <br/>
+        <a asp-controller="Ticket" asp-action="Index" asp-route-listType="OwnedTickets">View Submitted Tickets</a>
+    }
+
+    <hr/>
+
+    @*Sorting*@
+    
 </p>
+<form method="get" asp-action="Index">
+    <select name="sortOrder" asp-items="@ViewBag.SelectList"></select>
+    <button type="submit">Sort</button>
+</form>
+<h6>Sorted by @ViewBag.SortOrder</h6>
 <table class="table">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.Title)
+                Title
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Project)
+                Project
             </th>
-            
-            <th></th>
+
+            <th>Options</th>
         </tr>
     </thead>
     <tbody>
@@ -31,10 +57,29 @@
                 @Html.DisplayFor(modelItem => item.Project.Name)
             </td>
             <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> 
+                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> | 
+                <a asp-action="Details" asp-route-id="@item.Id">Details</a>
             </td>
         </tr>
 }
     </tbody>
 </table>
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<a asp-action="Index" asp-route-listType="@ViewBag.ListType"
+ asp-route-sortOrder="@ViewBag.SortOrder"
+   asp-route-pageNumber="@(Model.PageIndex - 1)"
+   class="btn btn-default @prevDisabled">
+    Previous
+</a>
+<a asp-action="Index" asp-route-listType="@ViewBag.ListType"
+ asp-route-sortOrder="@ViewBag.SortOrder"
+   asp-route-pageNumber="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
+<br />
