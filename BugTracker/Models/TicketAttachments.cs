@@ -12,9 +12,11 @@
         public ApplicationUser User { get; set; }
         public string FileUrl { get; set; }
 
-        public TicketAttachments(string description, int ticketId, string userId)
+        public TicketAttachments(string filePath, string fileUrl, string description, int ticketId, string userId)
         {
             Created = DateTime.Now;
+            FilePath = filePath;
+            FileUrl = fileUrl;
             Description = description;
             TicketId = ticketId;
             UserId = userId;

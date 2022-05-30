@@ -36,7 +36,7 @@ namespace BugTracker.DAL
 
         public Tickets Get(int id)
         {
-            return Context.Tickets.AsNoTracking().Include("Project")
+            return Context.Tickets.Include("Project")
                                   .Include("TicketType")
                                   .Include("TicketStatus")
                                   .Include("TicketPriority")
@@ -62,8 +62,7 @@ namespace BugTracker.DAL
 
         public IQueryable<Tickets> GetAll()
         {
-            return Context.Tickets.AsNoTracking()
-                                  .Include("Project")
+            return Context.Tickets.Include("Project")
                                   .Include("TicketType")
                                   .Include("TicketStatus")
                                   .Include("TicketPriority")
