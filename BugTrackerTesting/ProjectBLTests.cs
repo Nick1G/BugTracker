@@ -26,7 +26,7 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Get(It.IsAny<int>())).Returns<int>((num) => allProjects.First(project => project.Id == num));
 
-            mockRepo.Setup(repo => repo.GetAll().ToList()).Returns(allProjects);
+            mockRepo.Setup(repo => repo.GetAll()).Returns(allProjects.AsQueryable());
             mockRepo.Setup(repo => repo.GetList(It.IsAny<Expression<Func<Projects, bool>>>())).Returns<Expression<Func<Projects, bool>>>((func) => allProjects.AsQueryable().Where(func));
 
             mockRepo.Setup(repo => repo.Delete(It.IsAny<Projects>())).Callback<Projects>((proj) => allProjects.Remove(proj));
@@ -125,7 +125,7 @@ namespace BugTrackerTesting
 
             mockRepo.Setup(repo => repo.Get(It.IsAny<int>())).Returns<int>((num) => allTickets.First(ticket => ticket.Id == num));
 
-            mockRepo.Setup(repo => repo.GetAll().ToList()).Returns(allTickets);
+            mockRepo.Setup(repo => repo.GetAll()).Returns(allTickets.AsQueryable());
             mockRepo.Setup(repo => repo.GetList(It.IsAny<Expression<Func<Tickets, bool>>>())).Returns<Expression<Func<Tickets, bool>>>((func) => allTickets.AsQueryable().Where(func));
 
             mockRepo.Setup(repo => repo.Add(It.IsAny<Tickets>())).Callback<Tickets>((ticket) => allTickets.Add(ticket));
