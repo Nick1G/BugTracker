@@ -29,6 +29,11 @@
     @*Sorting*@
     
 </p>
+<form method="get" asp-action="Index">
+    <select name="sortOrder" asp-items="@ViewBag.SelectList"></select>
+    <button type="submit">Sort</button>
+</form>
+<h6>Sorted by @ViewBag.SortOrder</h6>
 <table class="table">
     <thead>
         <tr>
@@ -66,11 +71,13 @@
 }
 
 <a asp-action="Index" asp-route-listType="@ViewBag.ListType"
+ asp-route-sortOrder="@ViewBag.SortOrder"
    asp-route-pageNumber="@(Model.PageIndex - 1)"
    class="btn btn-default @prevDisabled">
     Previous
 </a>
 <a asp-action="Index" asp-route-listType="@ViewBag.ListType"
+ asp-route-sortOrder="@ViewBag.SortOrder"
    asp-route-pageNumber="@(Model.PageIndex + 1)"
    class="btn btn-default @nextDisabled">
     Next
